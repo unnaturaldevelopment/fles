@@ -2,8 +2,7 @@
 // @name        FetLife Enhancement Suite
 // @namespace   https://fetlife.com/users/3846707
 // @description Show full date and time on some FetLife pages instead of relative time.
-// @include     https://fetlife.com/home
-// @include     https://fetlife.com/groups*
+// @match       https://fetlife.com/*
 // @version     1
 // @grant       none
 // ==/UserScript==
