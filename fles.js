@@ -41,7 +41,7 @@ function adjustSubGroupPage() {
     var timestampList = document.getElementsByClassName('refresh-timestamp');
     var listLength = timestampList.length;
     for( var i = 0; i < listLength; i++ ) {
-        if( timestampList[i].parentElement.parentElement.className != 'sticky_line' ) {
+        if( timestampList[i].parentElement.parentElement.className !== 'sticky_line' ) {
             timestampList[i].textContent = 'updated on ' + timestampList[i].title
         }
     }
