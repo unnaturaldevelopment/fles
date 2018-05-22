@@ -6,8 +6,10 @@
 // @grant       none
 // ==/UserScript==
 function returnPageType( pageLocation ) {
-    var groupRE = RegExp('^https://fetlife.com/groups$');
-    var groupSubRE = RegExp('^https://fetlife.com/groups/[0-9]*.*$')
+    const homeRE = RegExp('^https://fetlife.com/home.*$');
+    const groupRE = RegExp('^https://fetlife.com/groups$');
+    const groupSubRE = RegExp('^https://fetlife.com/groups/[0-9]*.*$');
+    const settingsRE = RegExp('^https://fetlife.com/settings/.*$');
     if( groupRE.test(pageLocation) )
     {
         return 'groupPage'
