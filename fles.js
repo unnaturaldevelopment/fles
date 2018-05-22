@@ -29,7 +29,7 @@ function returnPageType( pageLocation ) {
     else {
         return 'all'
     }
-};
+}
 function adjustGroupPage() {
     // Replace 'ago' with actual timestamp
     var timestampList = document.getElementsByClassName('refresh-timestamp');
@@ -43,7 +43,7 @@ function adjustGroupPage() {
     for( i = 0; i < listLength; i++ ) {
         groupListingList[i].href = groupListingList[i] + '?order=discussions'
     }
-};
+}
 function adjustSubGroupPage() {
     // Replace 'ago' with actual timestamp
     var timestampList = document.getElementsByClassName('refresh-timestamp');
@@ -62,6 +62,12 @@ switch(returnPageType(document.location)) {
     case 'subGroup':
         adjustSubGroupPage();
         break;
+    case 'home':
+        adjustHomePage();
+        break;
+    case 'settings':
+        adjustSettings();
+        break;
     default:
         break;
-};
+}
