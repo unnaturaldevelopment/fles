@@ -18,8 +18,16 @@ function returnPageType( pageLocation ) {
     {
         return 'subGroup'
     }
+    else if( homeRE.test( pageLocation) )
+    {
+        return 'home'
+    }
+    else if( settingsRE.test( pageLocation ) )
+    {
+        return 'settings'
+    }
     else {
-        return false
+        return 'all'
     }
 };
 function adjustGroupPage() {
