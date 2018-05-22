@@ -54,6 +54,9 @@ function adjustSubGroupPage() {
         }
     }
 }
+function adjustHomePage() {
+    // TODO: Add functionality exclusively to home page
+}
 
 switch(returnPageType(document.location)) {
     case 'groupPage':
