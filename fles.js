@@ -32,23 +32,23 @@ function returnPageType( pageLocation ) {
 }
 function adjustGroupPage() {
     // Replace 'ago' with actual timestamp
-    var timestampList = document.getElementsByClassName('refresh-timestamp');
-    var listLength = timestampList.length;
-    for( var i = 0; i < listLength; i++ ) {
+    const timestampList = document.getElementsByClassName('refresh-timestamp');
+    let listLength = timestampList.length;
+    for( let i = 0; i < listLength; i++ ) {
         timestampList[i].textContent = 'on ' + timestampList[i].title
     }
     // Replace group href with redirect to new discussions instead of comments
-    var groupListingList = document.getElementsByClassName('group_listing');
+    const groupListingList = document.getElementsByClassName('group_listing');
     listLength = groupListingList.length;
-    for( i = 0; i < listLength; i++ ) {
+    for( let i = 0; i < listLength; i++ ) {
         groupListingList[i].href = groupListingList[i] + '?order=discussions'
     }
 }
 function adjustSubGroupPage() {
     // Replace 'ago' with actual timestamp
-    var timestampList = document.getElementsByClassName('refresh-timestamp');
-    var listLength = timestampList.length;
-    for( var i = 0; i < listLength; i++ ) {
+    const timestampList = document.getElementsByClassName('refresh-timestamp');
+    let listLength = timestampList.length;
+    for( let i = 0; i < listLength; i++ ) {
         if( timestampList[i].parentElement.parentElement.className !== 'sticky_line' ) {
             timestampList[i].textContent = 'updated on ' + timestampList[i].title
         }
