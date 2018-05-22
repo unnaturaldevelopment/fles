@@ -9,7 +9,6 @@ function returnPageType( pageLocation ) {
     const homeRE = RegExp('^https://fetlife.com/home.*$');
     const groupRE = RegExp('^https://fetlife.com/groups$');
     const groupSubRE = RegExp('^https://fetlife.com/groups/[0-9]*.*$');
-    const settingsRE = RegExp('^https://fetlife.com/settings/.*$');
     if( groupRE.test(pageLocation) )
     {
         return 'groupPage'
@@ -21,10 +20,6 @@ function returnPageType( pageLocation ) {
     else if( homeRE.test( pageLocation) )
     {
         return 'home'
-    }
-    else if( settingsRE.test( pageLocation ) )
-    {
-        return 'settings'
     }
     else {
         return 'all'
@@ -67,9 +62,6 @@ switch(returnPageType(document.location)) {
         break;
     case 'home':
         adjustHomePage();
-        break;
-    case 'settings':
-        adjustSettings();
         break;
     default:
         break;
