@@ -3,7 +3,9 @@
 // @namespace   https://fetlife.com/users/8366100
 // @match       https://fetlife.com/*
 // @version     1
-// @grant       none
+// @grant       GM_addStyle
+// @grant       GM_setValue
+// @grant       GM_getValue
 // ==/UserScript==
 function returnPageType( pageLocation ) {
     const homeRE = RegExp('^https://fetlife.com/home.*$');
