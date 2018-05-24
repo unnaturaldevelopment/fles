@@ -34,25 +34,31 @@ function returnPageType( pageLocation ) {
 }
 function adjustGroupPage() {
     // Replace 'ago' with actual timestamp
-    const timestampList = document.getElementsByClassName('refresh-timestamp');
-    let listLength = timestampList.length;
-    for( let i = 0; i < listLength; i++ ) {
-        timestampList[i].textContent = 'on ' + timestampList[i].title
+    if( GM_getValue('timestamp_groups') ) {
+        const timestampList = document.getElementsByClassName('refresh-timestamp');
+        let listLength = timestampList.length;
+        for( let i = 0; i < listLength; i++ ) {
+            timestampList[i].textContent = 'on ' + timestampList[i].title;
+        }
     }
     // Replace group href with redirect to new discussions instead of comments
-    const groupListingList = document.getElementsByClassName('group_listing');
-    listLength = groupListingList.length;
-    for( let i = 0; i < listLength; i++ ) {
-        groupListingList[i].href = groupListingList[i] + '?order=discussions'
+    if( GM_getValue('group_new_discussion') ) {
+        const groupListingList = document.getElementsByClassName('group_listing');
+        let listLength = groupListingList.length;
+        for( let i = 0; i < listLength; i++ ) {
+            groupListingList[i].href = groupListingList[i] + '?order=discussions';
+        }
     }
 }
 function adjustSubGroupPage() {
     // Replace 'ago' with actual timestamp
-    const timestampList = document.getElementsByClassName('refresh-timestamp');
-    let listLength = timestampList.length;
-    for( let i = 0; i < listLength; i++ ) {
-        if( timestampList[i].parentElement.parentElement.className !== 'sticky_line' ) {
-            timestampList[i].textContent = 'updated on ' + timestampList[i].title
+    if( GM_getValue('timestamp_group') ) {
+        const timestampList = document.getElementsByClassName('refresh-timestamp');
+        let listLength = timestampList.length;
+        for( let i = 0; i < listLength; i++ ) {
+            if( timestampList[i].parentElement.parentElement.className !== 'sticky_line' ) {
+                timestampList[i].textContent = 'updated on ' + timestampList[i].title;
+            }
         }
     }
 }
