@@ -14,22 +14,22 @@ function returnPageType( pageLocation ) {
     const settingsRE = RegExp('^https://fetlife.com/settings/.*$');
     if( groupRE.test(pageLocation) )
     {
-        return 'groupPage'
+        return 'groupPage';
     }
     else if( groupSubRE.test( pageLocation ) )
     {
-        return 'subGroup'
+        return 'subGroup';
     }
     else if( homeRE.test( pageLocation) )
     {
-        return 'home'
+        return 'home';
     }
     else if( settingsRE.test( pageLocation ) )
     {
         return 'settings';
     }
     else {
-        return 'all'
+        return 'all';
     }
 }
 function adjustGroupPage() {
