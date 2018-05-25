@@ -102,8 +102,8 @@ function showSettings(event) {
     event.target.style.color = '#fff';
     event.target.style.fontWeight = '700';
     // Instantiate the containers
-    divContainer.insertAdjacentHTML('beforeEnd','<div class="span-16 append-1"><fieldset><legend>FL Enhancement Suite Settings</legend></fieldset></div>');
-    divContainer.insertAdjacentHTML('beforeEnd','<div class="span-7 small last"><br><h4>Q: What is the FL Enhancement Suite?</h4><p>A: The FL Enhancement Suite is a <a href="https://en.wikipedia.org/wiki/Userscript" target="_blank">UserScript</a> that can be added to the <a href="https://tampermonkey.net/" target="_blank">Tampermonkey</a> (or like) plug-in. The purpose of the script is to provide customization of the user interface built by the FetLife team. The script will <b>not</b> add functionality that is included when a user <a href="/support?ici=footer--support-fetlife&icn=support-fetlife" target="_blank">supports</a> FetLife.</p></div>');
+    divContainer.insertAdjacentHTML('beforeEnd','<div class="span-16 append-1"><fieldset><legend>FetLife Enhancement Suite Settings</legend></fieldset></div>');
+    divContainer.insertAdjacentHTML('beforeEnd','<div class="span-7 small last"><br><h4>Q: What is the FetLife Enhancement Suite?</h4><p>A: The FetLife Enhancement Suite is a <a href="https://en.wikipedia.org/wiki/Userscript" target="_blank">UserScript</a> that can be added to the <a href="https://tampermonkey.net/" target="_blank">Tampermonkey</a> (or like) plug-in. The purpose of the script is to provide customization of the user interface built by the FetLife team. The script will <b>not</b> add functionality that is included when a user <a href="/support?ici=footer--support-fetlife&icn=support-fetlife" target="_blank">supports</a> FetLife.</p></div>');
     // Fill the containers
     const fieldSetElement = divContainer.querySelectorAll('fieldset')[0];
     fieldSetElement.insertAdjacentHTML('afterbegin','<table class="settings"><tbody><tr id="misc"><th class="section_header">Miscellaneous Options</th><th class="section_header">Enabled?</th></tr></tbody></table>');
