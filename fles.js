@@ -6,12 +6,14 @@
 // @grant       GM_addStyle
 // @grant       GM_setValue
 // @grant       GM_getValue
+// @grant       GM_xmlhttpRequest
 // ==/UserScript==
 function returnPageType( pageLocation ) {
     const homeRE = RegExp('^https://fetlife.com/home.*$');
     const groupRE = RegExp('^https://fetlife.com/groups$');
     const groupSubRE = RegExp('^https://fetlife.com/groups/[0-9]*.*$');
     const settingsRE = RegExp('^https://fetlife.com/settings/.*$');
+    const profileRE = RegExp('^https://fetlife.com/users/[0-9]*$');
     if( groupRE.test(pageLocation) )
     {
         return 'groupPage';
@@ -27,6 +29,10 @@ function returnPageType( pageLocation ) {
     else if( settingsRE.test( pageLocation ) )
     {
         return 'settings';
+    }
+    else if( profileRE.test( pageLocation ) )
+    {
+        return 'profile';
     }
     else {
         return 'all';
@@ -115,6 +121,32 @@ function showSettings(event) {
 function processCheckbox(event) {
     GM_setValue(event.target.id, event.target.checked);
 }
+function adjustProfile() {
+    const imgLink = document.querySelector('img.pan').src.split(/^https:\/\/\w+.fetlife.com\/\w+\/\w+\/(\w+[-/]\w+-?\w+-?\w+-?[A-Za-z0-9]+)/)[1];
+    GM_xmlhttpRequest({
+        method: 'GET',
+        url: document.location + '/pictures',
+        onload: function handleResponse(response) {
+            const profileGallery = new DOMParser().parseFromString(response.responseText, 'text/html');
+            const galleryPages = profileGallery.getElementById('pictures').getAttribute('data-total-pages');
+            for (let j = 1; j <= galleryPages; j++) {
+                GM_xmlhttpRequest({
+                    method: 'GET',
+                    url: document.location + '/pictures?p=false&page=' + j,
+                    onload: function findImage(response) {
+                        const imageList = new DOMParser().parseFromString(response.responseText, 'text/html');
+                        const galleryImages = imageList.querySelector('#pictures').querySelectorAll('ul')[0].children;
+                        for (let i = 0; i < galleryImages.length; i++) {
+                            if (galleryImages[i].firstElementChild.firstElementChild.src.split(/^https:\/\/\w+.fetlife.com\/\w+\/\w+\/(\w+[-/]\w+-?\w+-?\w+-?[A-Za-z0-9]+)/)[1] === imgLink) {
+                                document.querySelector('img.pan').parentElement.href = galleryImages[i].firstElementChild.href;
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    });
+}
 switch(returnPageType(document.location)) {
     case 'groupPage':
         adjustGroupPage();
@@ -127,6 +159,9 @@ switch(returnPageType(document.location)) {
         break;
     case 'settings':
         adjustSettings();
+        break;
+    case 'profile':
+        adjustProfile();
         break;
     default:
         break;
