@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name        FetLife Enhancement Suite
-// @namespace   https://fetlife.com/users/8366100
+// @namespace   unnaturaldevelopment
 // @match       https://fetlife.com/*
 // @version     1
 // @grant       GM_addStyle
