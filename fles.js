@@ -67,44 +67,195 @@ function adjustHomePage() {
     // TODO: Add functionality exclusively to home page
 }
 function adjustProfile() {
-    const imgLink = document.querySelector('img.pan').src.split(/^https:\/\/\w+.fetlife.com\/\w+\/\w+\/(\w+[-/]\w+-?\w+-?\w+-?[A-Za-z0-9]+)/)[1];
-    GM_xmlhttpRequest({
-        method: 'GET',
-        url: document.location + '/pictures',
-        onload: function handleResponse(response) {
-            const profileGallery = new DOMParser().parseFromString(response.responseText, 'text/html');
-            const galleryPages = profileGallery.getElementById('pictures').getAttribute('data-total-pages');
-            for (let j = 1; j <= galleryPages; j++) {
-                GM_xmlhttpRequest({
-                    method: 'GET',
-                    url: document.location + '/pictures?p=false&page=' + j,
-                    onload: function findImage(response) {
-                        const imageList = new DOMParser().parseFromString(response.responseText, 'text/html');
-                        const galleryImages = imageList.querySelector('#pictures').querySelectorAll('ul')[0].children;
-                        for (let i = 0; i < galleryImages.length; i++) {
-                            if (galleryImages[i].firstElementChild.firstElementChild.src.split(/^https:\/\/\w+.fetlife.com\/\w+\/\w+\/(\w+[-/]\w+-?\w+-?\w+-?[A-Za-z0-9]+)/)[1] === imgLink) {
-                                document.querySelector('img.pan').parentElement.href = galleryImages[i].firstElementChild.href;
+    if( GM_getValue('redirect_avatar_to_gallery')) {
+        const imgLink = document.querySelector('img.pan').src.split(/^https:\/\/\w+.fetlife.com\/\w+\/\w+\/(\w+[-/]\w+-?\w+-?\w+-?[A-Za-z0-9]+)/)[1];
+        GM_xmlhttpRequest({
+            method: 'GET',
+            url: document.location + '/pictures',
+            onload: function handleResponse(response) {
+                const profileGallery = new DOMParser().parseFromString(response.responseText, 'text/html');
+                const galleryPages = profileGallery.getElementById('pictures').getAttribute('data-total-pages');
+                for (let j = 1; j <= galleryPages; j++) {
+                    GM_xmlhttpRequest({
+                        method: 'GET',
+                        url: document.location + '/pictures?p=false&page=' + j,
+                        onload: function findImage(response) {
+                            const imageList = new DOMParser().parseFromString(response.responseText, 'text/html');
+                            const galleryImages = imageList.querySelector('#pictures').querySelectorAll('ul')[0].children;
+                            for (let i = 0; i < galleryImages.length; i++) {
+                                if (galleryImages[i].firstElementChild.firstElementChild.src.split(/^https:\/\/\w+.fetlife.com\/\w+\/\w+\/(\w+[-/]\w+-?\w+-?\w+-?[A-Za-z0-9]+)/)[1] === imgLink) {
+                                    document.querySelector('img.pan').parentElement.href = galleryImages[i].firstElementChild.href;
+                                }
                             }
                         }
-                    }
-                });
+                    });
+                }
             }
-        }
+        });
+    }
+}
+
+function addFlesSettings(){
+    GM_addStyle('div#fles-menu { position: fixed; display: none; flex-direction: column; top: 1%; left: 1%; right: 1%; height: 350px; padding: 1%; border: solid 2px #CC0000; border-radius: 10px; background-color: rgba(0,0,0,0.9); z-index: 100000000; }');
+    GM_addStyle('div#fles-header { display: inherit; margin: 1%; flex: 0 0 70px; }');
+    GM_addStyle('div#fles-content { display: inherit; flex: 0 0 230px; }');
+    GM_addStyle('div#fles-footer { display: inherit; flex: 0 0 50px; justify-content: flex-end; }');
+    GM_addStyle('div#fles-toc { }');
+    GM_addStyle('div#fles-body { margin: 1em; }');
+    GM_addStyle('div#fles-body p { margin: 0; }');
+    GM_addStyle('table#fles-settings { width: auto; margin: 1em; vertical-align: middle; border-collapse: separate; border-spacing: 0; }');
+    GM_addStyle('table#fles-settings th.section_header { border-bottom: 1px solid #555; font-weight: normal; vertical-align: top; padding: 4px 10px 4px 5px; } ');
+    GM_addStyle('table#fles-settings td { padding: 4px 10px 4px 5px; vertical-align: middle; text-align: left; font-weight: normal; } ');
+    GM_addStyle('table#fles-settings td.option { text-align: center; padding: 4px 10px 4px 5px; vertical-align: middle; font-weight: normal; ');
+    GM_addStyle('a#fles-settings { }');
+    GM_addStyle('button.fles-button { margin: 1%; border-color: black; border-radius: 5px; background-color: #777; }');
+    GM_addStyle('button#fles-close { }');
+    GM_addStyle('ul#fles-toc-list { list-style-type: none; }');
+    GM_addStyle('ul#fles-toc-list > li { margin-top: 10%; cursor: pointer; }');
+    GM_addStyle('h1#fles-header { line-height: 36px; font-family: serif; font-weight: bold; font-size: 2em; letter-spacing: 0px; color: #CC0000; text-decoration: underline; text-decoration-color: #777; }');
+    GM_addStyle('h3.fles-toc-h3 { margin: 0; padding: 0; line-height: 26px; font-size: 26px; font-weight: normal; letter-spacing: -1px; color: #777; }');
+    GM_addStyle('h3.fles-toc-h3-active { color: #FFF; }');
+
+    const notifyBar = document.querySelector('div.fl-nav__right-hand-wrapper div.fl-nav__notifications-wrapper');
+    // asterisk icon courtesy of https://fontawesome.com
+    // Usage license: https://fontawesome.com/license
+    const asteriskIcon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">' +
+        '<path d="M478.21 334.093L336 256l142.21-78.093c11.795-6.477 15.961-21.384 ' +
+        '9.232-33.037l-19.48-33.741c-6.728-11.653-21.72-15.499-33.227-8.523L296 186.718l3.475-162.204C299.763 11.061 ' +
+        '288.937 0 275.48 0h-38.96c-13.456 0-24.283 11.061-23.994 24.514L216 186.718 77.265 ' +
+        '102.607c-11.506-6.976-26.499-3.13-33.227 8.523l-19.48 33.741c-6.728 11.653-2.562 26.56 9.233 33.037L176 256 ' +
+        '33.79 334.093c-11.795 6.477-15.961 21.384-9.232 33.037l19.48 33.741c6.728 11.653 21.721 15.499 33.227 ' +
+        '8.523L216 325.282l-3.475 162.204C212.237 500.939 223.064 512 236.52 512h38.961c13.456 0 24.283-11.061 ' +
+        '23.995-24.514L296 325.282l138.735 84.111c11.506 6.976 26.499 3.13 33.227-8.523l19.48-33.741c6.728-11.653 ' +
+        '2.563-26.559-9.232-33.036z"/></svg>';
+    notifyBar.insertAdjacentHTML('beforeEnd', '<a id="fles-settings" class="fl-nav__notification fl-nav__icon ' +
+        'knockout-bound" title="FLES Settings">' + asteriskIcon + '</a>');
+    notifyBar.querySelector('a#fles-settings').addEventListener('click', openFlesSettings);
+    document.querySelector('body').insertAdjacentHTML('beforeEnd', '<div id="fles-menu"</div>');
+    const flesMenu = document.querySelector('div#fles-menu');
+    flesMenu.insertAdjacentHTML('afterBegin','<div id="fles-header"></div><div id="fles-content"></div><div id="fles-footer"></div>');
+    const flesHeader = document.querySelector('div#fles-header');
+    const flesFooter = document.querySelector('div#fles-footer');
+    flesHeader.insertAdjacentHTML('afterBegin','<h1 id="fles-header">FetLife Enhancement Suite</h1>');
+    flesFooter.insertAdjacentHTML('beforeEnd', '<button id="fles-close" class="fles-button">Close Settings</button>');
+    flesFooter.querySelector('button#fles-close').addEventListener('click',function(){
+        flesMenu.style.display = 'none';
+        document.querySelector('a#fles-settings').addEventListener('click', openFlesSettings);
+    });
+    const flesContent = document.querySelector('div#fles-content');
+    flesContent.insertAdjacentHTML('afterBegin', '<div id="fles-toc"><ul id="fles-toc-list">' +
+        '<li id="fles-toc-about"><h3 class="fles-toc-h3">About FLES</h3></li>' +
+        '<li id="fles-toc-localization"><h3 class="fles-toc-h3">Localization</h3></li>' +
+        '<li id="fles-toc-profiles"><h3 class="fles-toc-h3">Profiles</h3></li>' +
+        '<li id="fles-toc-groups"><h3 class="fles-toc-h3">Groups</h3></li>' +
+        '<li id="fles-toc-messaging"><h3 class="fles-toc-h3">Messaging</h3></li>' +
+        '</ul></div>');
+    const flesTocList = document.querySelector('ul#fles-toc-list');
+    flesTocList.querySelectorAll('li').forEach(function(listElement) {
+       listElement.addEventListener('click',switchSetting);
+    });
+    flesContent.insertAdjacentHTML('beforeEnd','<div id="fles-body"><p>Thanks for choosing FLES!</p></div>');
+}
+
+function openFlesSettings() {
+    document.querySelector('a#fles-settings').removeEventListener('click', openFlesSettings);
+    document.querySelector('div#fles-menu').style.display = 'flex';
+}
+
+function addCheckboxEvent(optionNode)
+{
+    optionNode.querySelectorAll('input').forEach(function(element) {
+        element.addEventListener('input', processCheckbox);
+        if (GM_getValue(element.id)) element.setAttribute('checked', '');
     });
 }
+
+function processCheckbox(event) {
+    GM_setValue(event.target.id, event.target.checked);
+}
+
+function switchSetting() {
+    let h3ActiveNode = this.parentElement.parentElement.querySelector('h3.fles-toc-h3-active');
+    if( h3ActiveNode ) {
+        h3ActiveNode.classList.remove('fles-toc-h3-active');
+    }
+    this.firstElementChild.classList.add('fles-toc-h3-active');
+    const flesBody = document.querySelector('div#fles-body');
+
+    switch( this.id ) {
+        case 'fles-toc-about' : {
+            let aboutNode = document.createElement('span');
+            aboutNode.insertAdjacentHTML('afterBegin', '<h4>Q: What is the FL Enhancement Suite?</h4><p>A: The FL Enhancement Suite is a <a href="https://en.wikipedia.org/wiki/Userscript" target="_blank">UserScript</a> that can be added to the <a href="https://tampermonkey.net/" target="_blank">Tampermonkey</a> (or like) plug-in. The purpose of the script is to provide customization of the user interface built by the FetLife team. The script will <b>not</b> add functionality that is included when a user <a href="/support?ici=footer--support-fetlife&icn=support-fetlife" target="_blank">supports</a> FetLife.</p>');
+            if (flesBody.firstElementChild) {
+                flesBody.replaceChild(aboutNode, flesBody.firstElementChild);
+            }
+            else flesBody.appendChild(aboutNode);
+            addCheckboxEvent(aboutNode);
+            break;
+        }
+        case 'fles-toc-localization': {
+            let localNode = document.createElement('span');
+            localNode.insertAdjacentHTML('afterBegin', '<p>The settings below are designed to improve the localized aspect of your FetLife user experience by adjusting datestamps, timezones, and other like attributes.</p>');
+            localNode.insertAdjacentHTML('beforeEnd', '<table id="fles-settings"><tbody><tr id="timestamp_expansion"><th class="section_header">Timestamp Expansion</th><th class="section_header">Enabled?</th></tr><tr><td><label for="timestamp_group">Expand timestamps in individual Group Pages</label></td><td class="option"><input type="checkbox" id="timestamp_group" name="timestamp_group"/></td></tr><tr><td><label for="timestamp_groups">Expand timestamps in main Groups Page</label></td><td class="option"><input type="checkbox" id="timestamp_groups" name="timestamp_groups"/></td></tr></tbody></table>');
+            if (flesBody.firstElementChild) {
+                flesBody.replaceChild(localNode, flesBody.firstElementChild);
+            }
+            else flesBody.appendChild(localNode);
+            addCheckboxEvent(localNode);
+            break;
+        }
+        case 'fles-toc-profiles': {
+            let profileNode = document.createElement('span');
+            profileNode.insertAdjacentHTML('afterBegin','<p>The settings below are designed to improve an aspect of profile pages.</p>');
+            profileNode.insertAdjacentHTML('beforeEnd', '<table id="fles-settings"><tbody><tr id="profile_changes"><th class="section_header">Profile Page Modifications</th><th class="section_header">Enabled?</th></tr><tr><td><label for="redirect_avatar_to_gallery">Redirect click on avatar to full image in gallery</label></td><td class="option"><input type="checkbox" id="redirect_avatar_to_gallery" name="redirect_avatar_to_gallery"/></td></tr></tbody></table>');
+            if( flesBody.firstElementChild ) {
+                flesBody.replaceChild(profileNode, flesBody.firstElementChild);
+            }
+            else flesBody.appendChild(profileNode);
+            addCheckboxEvent(profileNode);
+            break;
+        }
+        case 'fles-toc-groups': {
+            let groupNode = document.createElement('span');
+            groupNode.insertAdjacentHTML('afterBegin','<p>The settings below are designed to improve an aspect of group pages.</p>');
+            groupNode.insertAdjacentHTML('beforeEnd', '<table id="fles-settings"><tbody><tr id="group_options"><th class="section_header">Group Options</th><th class="section_header">Enabled?</th></tr><tr><td><label for="group_new_discussion">Redirect to new discussions when visiting group</label></td><td class="option"><input type="checkbox" id="group_new_discussion" name="group_new_discussion"/></td></tr></tbody></table>');
+            if( flesBody.firstElementChild ) {
+                flesBody.replaceChild(groupNode, flesBody.firstElementChild);
+            }
+            else flesBody.appendChild(groupNode);
+            addCheckboxEvent(groupNode);
+            break;
+        }
+        case 'fles-toc-messaging': {
+            let messageNode = document.createElement('span');
+            messageNode.insertAdjacentHTML('afterBegin','Coming soon!');
+            if( flesBody.firstElementChild ) {
+                flesBody.replaceChild(messageNode, flesBody.firstElementChild);
+            }
+            else flesBody.appendChild(messageNode);
+            addCheckboxEvent(messageNode);
+            break;
+        }
+    }
+}
+
 switch(returnPageType(document.location)) {
     case 'groupPage':
+        addFlesSettings();
         adjustGroupPage();
         break;
     case 'subGroup':
+        addFlesSettings();
         adjustSubGroupPage();
         break;
     case 'home':
+        addFlesSettings();
         adjustHomePage();
         break;
     case 'profile':
+        addFlesSettings();
         adjustProfile();
         break;
     default:
-        break;
+        addFlesSettings();
 }
