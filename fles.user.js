@@ -70,6 +70,27 @@ function adjustSubGroupPage() {
             }
         }
     }
+
+    // Enable multi-reply
+    if( GM_getValue('multi-reply-in-subgroup') ) {
+        const commentList = document.querySelectorAll('section#comments article div.fl-flag__body footer.fl-comment__actions span span.fl-text-separator--dot a[data-comment-author-nickname]');
+        // console.log(commentList);
+        commentList.forEach(function(comment){
+            // console.log(comment);
+            let multiReplyElement = comment.parentElement.cloneNode(true);
+            multiReplyElement.firstElementChild.innerHTML = 'Multi-Reply';
+            multiReplyElement.firstElementChild.removeAttribute('href');
+            multiReplyElement.firstElementChild.removeAttribute('data-comment-reply');
+            multiReplyElement.firstElementChild.classList.add('fles-group-multireply');
+            multiReplyElement.addEventListener('click', multyReplyInsert);
+            comment.parentElement.insertAdjacentElement('beforeEnd',multiReplyElement);
+        });
+    }
+}
+function multyReplyInsert(event) {
+    let commentBox = document.querySelector('div#new_group_post_comment_container div#new_comment form fieldset p textarea');
+    commentBox.value = commentBox.value + ' @' + event.target.getAttribute('data-comment-author-nickname') + ' ';
+    commentBox.focus();
 }
 function adjustHomePage() {
     // TODO: Add functionality exclusively to home page
@@ -116,6 +137,7 @@ function addFlesSettings(){
     GM_addStyle('table#fles-settings td { padding: 4px 10px 4px 5px; vertical-align: middle; text-align: left; font-weight: normal; } ');
     GM_addStyle('table#fles-settings td.option { text-align: center; padding: 4px 10px 4px 5px; vertical-align: middle; font-weight: normal; ');
     GM_addStyle('a#fles-settings { }');
+    GM_addStyle('a.fles-group-multireply { cursor: pointer; }');
     GM_addStyle('button.fles-button { margin: 1%; border-color: black; border-radius: 5px; background-color: #777; }');
     GM_addStyle('button#fles-close { }');
     GM_addStyle('ul#fles-toc-list { list-style-type: none; }');
@@ -226,7 +248,11 @@ function switchSetting() {
         case 'fles-toc-groups': {
             let groupNode = document.createElement('span');
             groupNode.insertAdjacentHTML('afterBegin','<p>The settings below are designed to improve an aspect of group pages.</p>');
-            groupNode.insertAdjacentHTML('beforeEnd', '<table id="fles-settings"><tbody><tr id="group_options"><th class="section_header">Group Options</th><th class="section_header">Enabled?</th></tr><tr><td><label for="group_new_discussion">Redirect to new discussions when visiting group</label></td><td class="option"><input type="checkbox" id="group_new_discussion" name="group_new_discussion"/></td></tr></tbody></table>');
+            groupNode.insertAdjacentHTML('beforeEnd', '<table id="fles-settings"><tbody>' +
+                '<tr id="group_options"><th class="section_header">Group Options</th><th class="section_header">Enabled?</th></tr>' +
+                '<tr><td><label for="group_new_discussion">Redirect to new discussions when visiting group</label></td><td class="option"><input type="checkbox" id="group_new_discussion" name="group_new_discussion"/></td></tr>' +
+                '<tr><td><label for="multi-reply-in-subgroup">Enable multi-reply in group discussion</label></td><td class="option"><input type="checkbox" id="multi-reply-in-subgroup" name="multi-reply-in-subgroup"/></td></tr>' +
+                '</tbody></table>');
             if( flesBody.firstElementChild ) {
                 flesBody.replaceChild(groupNode, flesBody.firstElementChild);
             }
