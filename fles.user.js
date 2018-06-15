@@ -1,13 +1,21 @@
 // ==UserScript==
 // @name        FetLife Enhancement Suite
+// @description Provide customization of the FetLife user interface
+// @license     GPL-3.0-only
+// @homepageURL https://github.com/unnaturaldevelopment/fles
+// @supportURL  https://github.com/unnaturaldevelopment/fles/issues
+// @version     1.1
+// @updateURL   https://openuserjs.org/meta/unnaturaldeveloper/fles.meta.js
 // @namespace   unnaturaldevelopment
 // @match       https://fetlife.com/*
-// @version     1
 // @grant       GM_addStyle
 // @grant       GM_setValue
 // @grant       GM_getValue
 // @grant       GM_xmlhttpRequest
 // ==/UserScript==
+// ==OpenUserJS==
+// @author unnaturaldeveloper
+// ==/OpenUserJS==
 function returnPageType( pageLocation ) {
     const homeRE = RegExp('^https://fetlife.com/home.*$');
     const groupRE = RegExp('^https://fetlife.com/groups$');
