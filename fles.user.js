@@ -86,11 +86,58 @@ function adjustSubGroupPage() {
             comment.parentElement.insertAdjacentElement('beforeEnd',multiReplyElement);
         });
     }
+
+    // Enable viewing of image inline
+    if( GM_getValue('inline-image-in-subgroup') ) {
+        const sidebarDiv = document.querySelector('a#report_discussion_button').parentElement;
+        const toggleInlineButtonOP = '<br><br><a id="fles-group-enable-inline-image-op" class="fles-link xq xs tdn">View images in original post</a>';
+        sidebarDiv.insertAdjacentHTML('beforeEnd',toggleInlineButtonOP);
+        sidebarDiv.querySelector('a#fles-group-enable-inline-image-op').addEventListener('click',function(){ toggleInlineImage('op'); });
+        const toggleInlineButtonThread = '<br><br><a id="fles-group-enable-inline-image-thread" class="fles-link xq xs tdn">View images in thread</a>';
+        sidebarDiv.insertAdjacentHTML('beforeEnd',toggleInlineButtonThread);
+        sidebarDiv.querySelector('a#fles-group-enable-inline-image-thread').addEventListener('click',function(){ toggleInlineImage('thread'); });
+
+    }
 }
 function multyReplyInsert(event) {
     let commentBox = document.querySelector('div#new_group_post_comment_container div#new_comment form fieldset p textarea');
     commentBox.value = commentBox.value + ' @' + event.target.getAttribute('data-comment-author-nickname') + ' ';
     commentBox.focus();
+}
+function toggleInlineImage(position) {
+    const pictureRE = RegExp('^https://fetlife.com/users/[0-9]*/pictures/[0-9]*$');
+    let imageList = '';
+
+    switch(position) {
+        case 'op' : {
+            imageList = document.querySelectorAll('div.may_contain_youtubes a');
+            break;
+        }
+        case 'thread' : {
+            imageList = document.querySelectorAll('div#group_post_comments_container section#comments a');
+            break;
+        }
+    }
+
+    imageList.forEach(function(image){
+        let imageLink = image.getAttribute('href');
+        // console.log('imageLink: ' + imageLink);
+        if( pictureRE.test(imageLink))
+        {
+            GM_xmlhttpRequest({
+                method: 'GET',
+                url: imageLink,
+                onload: function handleResponse(response) {
+                    const imageDOM = new DOMParser().parseFromString(response.responseText, 'text/html');
+                    let imgSrc = imageDOM.querySelector('figure.fl-picture a img[src]');
+                    image.removeAttribute('title');
+                    image.text = '';
+                    imgSrc.classList.remove('fl-disable-interaction');
+                    image.insertAdjacentElement('afterBegin',imgSrc);
+                }
+            });
+        }
+    });
 }
 function adjustHomePage() {
     // TODO: Add functionality exclusively to home page
@@ -252,6 +299,7 @@ function switchSetting() {
                 '<tr id="group_options"><th class="section_header">Group Options</th><th class="section_header">Enabled?</th></tr>' +
                 '<tr><td><label for="group_new_discussion">Redirect to new discussions when visiting group</label></td><td class="option"><input type="checkbox" id="group_new_discussion" name="group_new_discussion"/></td></tr>' +
                 '<tr><td><label for="multi-reply-in-subgroup">Enable multi-reply in group discussion</label></td><td class="option"><input type="checkbox" id="multi-reply-in-subgroup" name="multi-reply-in-subgroup"/></td></tr>' +
+                '<tr><td><label for="inline-image-in-subgroup">Enable ability to toggle inline images in group discussion</label></td><td class="option"><input type="checkbox" id="inline-image-in-subgroup" name="inline-image-in-subgroup"/></td></tr>' +
                 '</tbody></table>');
             if( flesBody.firstElementChild ) {
                 flesBody.replaceChild(groupNode, flesBody.firstElementChild);
