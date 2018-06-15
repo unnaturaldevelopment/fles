@@ -81,7 +81,7 @@ function adjustSubGroupPage() {
             multiReplyElement.firstElementChild.innerHTML = 'Multi-Reply';
             multiReplyElement.firstElementChild.removeAttribute('href');
             multiReplyElement.firstElementChild.removeAttribute('data-comment-reply');
-            multiReplyElement.firstElementChild.classList.add('fles-group-multireply');
+            multiReplyElement.firstElementChild.classList.add('fles-link');
             multiReplyElement.addEventListener('click', multyReplyInsert);
             comment.parentElement.insertAdjacentElement('beforeEnd',multiReplyElement);
         });
@@ -184,7 +184,7 @@ function addFlesSettings(){
     GM_addStyle('table#fles-settings td { padding: 4px 10px 4px 5px; vertical-align: middle; text-align: left; font-weight: normal; } ');
     GM_addStyle('table#fles-settings td.option { text-align: center; padding: 4px 10px 4px 5px; vertical-align: middle; font-weight: normal; ');
     GM_addStyle('a#fles-settings { }');
-    GM_addStyle('a.fles-group-multireply { cursor: pointer; }');
+    GM_addStyle('a.fles-link { cursor: pointer; }');
     GM_addStyle('button.fles-button { margin: 1%; border-color: black; border-radius: 5px; background-color: #777; }');
     GM_addStyle('button#fles-close { }');
     GM_addStyle('ul#fles-toc-list { list-style-type: none; }');
