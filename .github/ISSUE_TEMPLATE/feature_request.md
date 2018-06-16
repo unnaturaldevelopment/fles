@@ -8,6 +8,6 @@ about: Suggest an idea for this project
 A clear and concise description of what you want to happen.
 
 **Provide a link to a FetLife Suggestion related to this request below (if applicable)**
-*Example*: https://fetlife.com/improvements
+Example: https://fetlife.com/improvements
 
 **Provide a screenshot (if applicable)**
