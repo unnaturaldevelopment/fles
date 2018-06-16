@@ -21,6 +21,7 @@ function returnPageType( pageLocation ) {
     const groupRE = RegExp('^https://fetlife.com/groups$');
     const groupSubRE = RegExp('^https://fetlife.com/groups/[0-9]*.*$');
     const profileRE = RegExp('^https://fetlife.com/users/[0-9]*$');
+    const convRE = RegExp('^https://fetlife.com/(conversations/.*$|inbox)');
     if( groupRE.test(pageLocation) )
     {
         return 'groupPage';
@@ -36,6 +37,10 @@ function returnPageType( pageLocation ) {
     else if( profileRE.test( pageLocation ) )
     {
         return 'profile';
+    }
+    else if( convRE.test( pageLocation ) )
+    {
+        return 'conversation';
     }
     else {
         return 'all';
@@ -168,6 +173,19 @@ function adjustProfile() {
                 }
             }
         });
+    }
+}
+function adjustConv() {
+    // Enable automatic message box cursor placement for new messages
+    if( GM_getValue('pm_message_box_cursor_new')) {
+        const messageBox = document.querySelector('form#new_conversation input#subject');
+        messageBox.focus();
+    }
+
+    // Enable automatic message box cursor placement for active conversations
+    if( GM_getValue('pm_message_box_cursor_active')) {
+        const messageBox = document.querySelector('div.message_body div.input-group textarea[name=body');
+        messageBox.focus();
     }
 }
 
@@ -310,7 +328,13 @@ function switchSetting() {
         }
         case 'fles-toc-messaging': {
             let messageNode = document.createElement('span');
-            messageNode.insertAdjacentHTML('afterBegin','Coming soon!');
+            // pm_message_box_cursor
+            messageNode.insertAdjacentHTML('afterBegin','<p>The settings below are designed to improve an aspect of the private messaging interface.</p>');
+            messageNode.insertAdjacentHTML('beforeEnd', '<table id="fles-settings"><tbody>' +
+                '<tr id="pm_options"><th class="section_header">Private Message Options</th><th class="section_header">Enabled?</th></tr>' +
+                '<tr><td><label for="pm_message_box_cursor_new">Enable automatic message box cursor placement for new message</label></td><td class="option"><input type="checkbox" id="pm_message_box_cursor_new" name="pm_message_box_cursor_new"/></td></tr>' +
+                '<tr><td><label for="pm_message_box_cursor_active">Enable automatic message box cursor placement for active conversation</label></td><td class="option"><input type="checkbox" id="pm_message_box_cursor_active" name="pm_message_box_cursor_active"/></td></tr>' +
+                '</tbody></table>');
             if( flesBody.firstElementChild ) {
                 flesBody.replaceChild(messageNode, flesBody.firstElementChild);
             }
@@ -337,6 +361,10 @@ switch(returnPageType(document.location)) {
     case 'profile':
         addFlesSettings();
         adjustProfile();
+        break;
+    case 'conversation':
+        addFlesSettings();
+        adjustConv();
         break;
     default:
         addFlesSettings();
