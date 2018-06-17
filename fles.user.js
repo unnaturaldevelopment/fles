@@ -189,7 +189,7 @@ function adjustConv() {
     }
 }
 
-function addFlesSettings(){
+function addFlesSettings(pageType){
     GM_addStyle('div#fles-menu { position: fixed; display: none; flex-direction: column; top: 1%; left: 1%; right: 1%; height: 350px; padding: 1%; border: solid 2px #CC0000; border-radius: 10px; background-color: rgba(0,0,0,0.9); z-index: 100000000; }');
     GM_addStyle('div#fles-header { display: inherit; margin: 1%; flex: 0 0 70px; }');
     GM_addStyle('div#fles-content { display: inherit; flex: 0 0 230px; }');
@@ -201,7 +201,7 @@ function addFlesSettings(){
     GM_addStyle('table#fles-settings th.section_header { border-bottom: 1px solid #555; font-weight: normal; vertical-align: top; padding: 4px 10px 4px 5px; } ');
     GM_addStyle('table#fles-settings td { padding: 4px 10px 4px 5px; vertical-align: middle; text-align: left; font-weight: normal; } ');
     GM_addStyle('table#fles-settings td.option { text-align: center; padding: 4px 10px 4px 5px; vertical-align: middle; font-weight: normal; ');
-    GM_addStyle('a#fles-settings { }');
+    GM_addStyle('a#fles-settings { display: block !important; }');
     GM_addStyle('a.fles-link { cursor: pointer; }');
     GM_addStyle('button.fles-button { margin: 1%; border-color: black; border-radius: 5px; background-color: #777; }');
     GM_addStyle('button#fles-close { }');
@@ -211,7 +211,6 @@ function addFlesSettings(){
     GM_addStyle('h3.fles-toc-h3 { margin: 0; padding: 0; line-height: 26px; font-size: 26px; font-weight: normal; letter-spacing: -1px; color: #777; }');
     GM_addStyle('h3.fles-toc-h3-active { color: #FFF; }');
 
-    const notifyBar = document.querySelector('div.fl-nav__right-hand-wrapper div.fl-nav__notifications-wrapper');
     // asterisk icon courtesy of https://fontawesome.com
     // Usage license: https://fontawesome.com/license
     const asteriskIcon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">' +
@@ -223,8 +222,26 @@ function addFlesSettings(){
         '8.523L216 325.282l-3.475 162.204C212.237 500.939 223.064 512 236.52 512h38.961c13.456 0 24.283-11.061 ' +
         '23.995-24.514L296 325.282l138.735 84.111c11.506 6.976 26.499 3.13 33.227-8.523l19.48-33.741c6.728-11.653 ' +
         '2.563-26.559-9.232-33.036z"/></svg>';
-    notifyBar.insertAdjacentHTML('beforeEnd', '<a id="fles-settings" class="fl-nav__notification fl-nav__icon ' +
-        'knockout-bound" title="FLES Settings">' + asteriskIcon + '</a>');
+
+    var notifyBar = '';
+    if( pageType === 'conversation')
+    {
+        // /inbox and /conversations/.* are using a new responsive design for the navbar... compensating
+        notifyBar = document.querySelector('body nav div.self-end ul.list li a[href="/search"]').parentElement;
+        const flesNavElement = notifyBar.cloneNode(false);
+        const flesNavAnchor = notifyBar.firstElementChild.cloneNode(false);
+        flesNavAnchor.id = 'fles-settings';
+        flesNavAnchor.removeAttribute('href');
+        flesNavAnchor.insertAdjacentHTML('afterBegin',asteriskIcon);
+        flesNavElement.insertAdjacentElement('afterBegin',flesNavAnchor);
+        notifyBar.insertAdjacentElement('beforeBegin',flesNavElement);
+        notifyBar = notifyBar.parentElement; // Necessary hack to find the FLES icon
+    }
+    else {
+        notifyBar = document.querySelector('div.fl-nav__right-hand-wrapper div.fl-nav__notifications-wrapper');
+        notifyBar.insertAdjacentHTML('beforeEnd', '<a id="fles-settings" class="fl-nav__notification fl-nav__icon ' +
+            'knockout-bound" title="FLES Settings">' + asteriskIcon + '</a>');
+    }
     notifyBar.querySelector('a#fles-settings').addEventListener('click', openFlesSettings);
     document.querySelector('body').insertAdjacentHTML('beforeEnd', '<div id="fles-menu"</div>');
     const flesMenu = document.querySelector('div#fles-menu');
@@ -347,23 +364,23 @@ function switchSetting() {
 
 switch(returnPageType(document.location)) {
     case 'groupPage':
-        addFlesSettings();
+        addFlesSettings('groupPage');
         adjustGroupPage();
         break;
     case 'subGroup':
-        addFlesSettings();
+        addFlesSettings('subGroup');
         adjustSubGroupPage();
         break;
     case 'home':
-        addFlesSettings();
+        addFlesSettings('home');
         adjustHomePage();
         break;
     case 'profile':
-        addFlesSettings();
+        addFlesSettings('profile');
         adjustProfile();
         break;
     case 'conversation':
-        addFlesSettings();
+        addFlesSettings('conversation');
         adjustConv();
         break;
     default:
