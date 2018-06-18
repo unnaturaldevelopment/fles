@@ -22,7 +22,8 @@ function returnPageType( pageLocation ) {
     const groupSubRE = RegExp('^https://fetlife.com/groups/[0-9]*.*$');
     const profileRE = RegExp('^https://fetlife.com/users/[0-9]*$');
     const convNewRE = RegExp('^https://fetlife.com/conversations/new.*$');
-    const inboxRE = RegExp('^https://fetlife.com/inbox');
+    const inboxRE = RegExp('^https://fetlife.com/inbox.*$');
+    const settingsRespRE = RegExp('^https://fetlife.com/settings/responsive/.*$');
     if( groupRE.test(pageLocation) )
     {
         return 'groupPage';
@@ -30,10 +31,6 @@ function returnPageType( pageLocation ) {
     else if( groupSubRE.test( pageLocation ) )
     {
         return 'subGroup';
-    }
-    else if( homeRE.test( pageLocation) )
-    {
-        return 'home';
     }
     else if( profileRE.test( pageLocation ) )
     {
@@ -47,11 +44,12 @@ function returnPageType( pageLocation ) {
     {
         return 'inbox';
     }
-    else {
-        return 'all';
+    else if( settingsRespRE.test( pageLocation ) )
+    {
+        return 'settingsResp';
     }
 }
-function adjustGroupPage() {
+function adjustGroup() {
     // Replace 'ago' with actual timestamp
     if( GM_getValue('timestamp_groups') ) {
         const timestampList = document.getElementsByClassName('refresh-timestamp');
@@ -69,7 +67,7 @@ function adjustGroupPage() {
         }
     }
 }
-function adjustSubGroupPage() {
+function adjustSubGroup() {
     // Replace 'ago' with actual timestamp
     if( GM_getValue('timestamp_group') ) {
         const timestampList = document.getElementsByClassName('refresh-timestamp');
@@ -149,9 +147,6 @@ function toggleInlineImage(position) {
         }
     });
 }
-function adjustHomePage() {
-    // TODO: Add functionality exclusively to home page
-}
 function adjustProfile() {
     if( GM_getValue('redirect_avatar_to_gallery')) {
         const imgLink = document.querySelector('img.pan').src.split(/^https:\/\/\w+.fetlife.com\/\w+\/\w+\/(\w+[-/]\w+-?\w+-?\w+-?[A-Za-z0-9]+)/)[1];
@@ -194,17 +189,23 @@ function adjustExistingConv() {
         messageBox.focus();
     }
 }
-function fixInbox() {
+function adjustInbox() {
     // Listen for turbolinks:click to conversation#new-message
     const convRE = RegExp('https://fetlife.com/conversations/[0-9]*.*$');
     document.addEventListener('turbolinks:load',function(){
         if(convRE.test(event.data.url)) {
             adjustExistingConv();
         }
+        addFlesSettings();
+    });
+}
+function adjustSettingsResp() {
+    document.addEventListener('turbolinks:load',function() {
+        addFlesSettings();
     });
 }
 
-function addFlesSettings(pageType){
+function addFlesSettings(){
     GM_addStyle('div#fles-menu { position: fixed; display: none; flex-direction: column; top: 1%; left: 1%; right: 1%; height: 350px; padding: 1%; border: solid 2px #CC0000; border-radius: 10px; background-color: rgba(0,0,0,0.9); z-index: 100000000; }');
     GM_addStyle('div#fles-header { display: inherit; margin: 1%; flex: 0 0 70px; }');
     GM_addStyle('div#fles-content { display: inherit; flex: 0 0 230px; }');
@@ -239,10 +240,10 @@ function addFlesSettings(pageType){
         '2.563-26.559-9.232-33.036z"/></svg>';
 
     var notifyBar = '';
-    if( pageType === 'conversation')
+    if( (notifyBar = document.querySelector('body nav div.self-end ul.list li a[href="/search"]')) !== null )
     {
         // /inbox and /conversations/.* are using a new responsive design for the navbar... compensating
-        notifyBar = document.querySelector('body nav div.self-end ul.list li a[href="/search"]').parentElement;
+        notifyBar = notifyBar.parentElement;
         const flesNavElement = notifyBar.cloneNode(false);
         const flesNavAnchor = notifyBar.firstElementChild.cloneNode(false);
         flesNavAnchor.id = 'fles-settings';
@@ -377,29 +378,26 @@ function switchSetting() {
     }
 }
 
+// Add FLES Settings to all pages
+addFlesSettings();
+
 switch(returnPageType(document.location)) {
     case 'groupPage':
-        addFlesSettings('groupPage');
-        adjustGroupPage();
+        adjustGroup();
         break;
     case 'subGroup':
-        addFlesSettings('subGroup');
-        adjustSubGroupPage();
-        break;
-    case 'home':
-        addFlesSettings('home');
-        adjustHomePage();
+        adjustSubGroup();
         break;
     case 'profile':
-        addFlesSettings('profile');
         adjustProfile();
         break;
     case 'conversation-new':
         adjustNewConv();
         break;
     case 'inbox':
-        fixInbox();
+        adjustInbox();
         break;
-    default:
-        addFlesSettings();
+    case 'settingsResp':
+        adjustSettingsResp();
+        break;
 }
