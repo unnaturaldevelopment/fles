@@ -21,7 +21,8 @@ function returnPageType( pageLocation ) {
     const groupRE = RegExp('^https://fetlife.com/groups$');
     const groupSubRE = RegExp('^https://fetlife.com/groups/[0-9]*.*$');
     const profileRE = RegExp('^https://fetlife.com/users/[0-9]*$');
-    const convRE = RegExp('^https://fetlife.com/(conversations/.*$|inbox)');
+    const convNewRE = RegExp('^https://fetlife.com/conversations/new.*$');
+    const inboxRE = RegExp('^https://fetlife.com/inbox');
     if( groupRE.test(pageLocation) )
     {
         return 'groupPage';
@@ -38,9 +39,13 @@ function returnPageType( pageLocation ) {
     {
         return 'profile';
     }
-    else if( convRE.test( pageLocation ) )
+    else if( convNewRE.test( pageLocation ) )
     {
-        return 'conversation';
+        return 'conversation-new';
+    }
+    else if( inboxRE.test( pageLocation ) )
+    {
+        return 'inbox';
     }
     else {
         return 'all';
@@ -175,18 +180,28 @@ function adjustProfile() {
         });
     }
 }
-function adjustConv() {
+function adjustNewConv() {
     // Enable automatic message box cursor placement for new messages
     if( GM_getValue('pm_message_box_cursor_new')) {
         const messageBox = document.querySelector('form#new_conversation input#subject');
         messageBox.focus();
     }
-
+}
+function adjustExistingConv() {
     // Enable automatic message box cursor placement for active conversations
     if( GM_getValue('pm_message_box_cursor_active')) {
         const messageBox = document.querySelector('div.message_body div.input-group textarea[name=body');
         messageBox.focus();
     }
+}
+function fixInbox() {
+    // Listen for turbolinks:click to conversation#new-message
+    const convRE = RegExp('https://fetlife.com/conversations/[0-9]*.*$');
+    document.addEventListener('turbolinks:load',function(){
+        if(convRE.test(event.data.url)) {
+            adjustExistingConv();
+        }
+    });
 }
 
 function addFlesSettings(pageType){
@@ -379,9 +394,11 @@ switch(returnPageType(document.location)) {
         addFlesSettings('profile');
         adjustProfile();
         break;
-    case 'conversation':
-        addFlesSettings('conversation');
-        adjustConv();
+    case 'conversation-new':
+        adjustNewConv();
+        break;
+    case 'inbox':
+        fixInbox();
         break;
     default:
         addFlesSettings();
