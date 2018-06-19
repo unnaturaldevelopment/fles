@@ -8,9 +8,11 @@
 // @updateURL   https://openuserjs.org/meta/unnaturaldeveloper/FetLife_Enhancement_Suite.meta.js
 // @namespace   unnaturaldevelopment
 // @match       https://fetlife.com/*
+// @resource    normalize4ab3de5 https://raw.githubusercontent.com/necolas/normalize.css/4ab3de5bdd26b161c3c82a5a2f72df3e57a8e4bf/normalize.css#md5=fda27b856c2e3cada6e0f6bfeccc2067,sha1=734a72e6c28d4a3a870404fb4abf72723c754296,sha512=faa0766a27f822e530f9cd2d1f9c3b8989abeefe8027e14b52aaf6c1faf732cf633fa2062926613b487807db84a418754ee3ede81a3c1cb593940157d6f71c65
 // @grant       GM_addStyle
 // @grant       GM_setValue
 // @grant       GM_getValue
+// @grant       GM_getResourceText
 // @grant       GM_xmlhttpRequest
 // ==/UserScript==
 // ==OpenUserJS==
@@ -206,27 +208,6 @@ function adjustSettingsResp() {
 }
 
 function addFlesSettings(){
-    GM_addStyle('div#fles-menu { position: fixed; display: none; flex-direction: column; top: 1%; left: 1%; right: 1%; height: 350px; padding: 1%; border: solid 2px #CC0000; border-radius: 10px; background-color: rgba(0,0,0,0.9); z-index: 100000000; }');
-    GM_addStyle('div#fles-header { display: inherit; margin: 1%; flex: 0 0 70px; }');
-    GM_addStyle('div#fles-content { display: inherit; flex: 0 0 230px; }');
-    GM_addStyle('div#fles-footer { display: inherit; flex: 0 0 50px; justify-content: flex-end; }');
-    GM_addStyle('div#fles-toc { }');
-    GM_addStyle('div#fles-body { margin: 1em; }');
-    GM_addStyle('div#fles-body p { margin: 0; }');
-    GM_addStyle('table#fles-settings { width: auto; margin: 1em; vertical-align: middle; border-collapse: separate; border-spacing: 0; }');
-    GM_addStyle('table#fles-settings th.section_header { border-bottom: 1px solid #555; font-weight: normal; vertical-align: top; padding: 4px 10px 4px 5px; } ');
-    GM_addStyle('table#fles-settings td { padding: 4px 10px 4px 5px; vertical-align: middle; text-align: left; font-weight: normal; } ');
-    GM_addStyle('table#fles-settings td.option { text-align: center; padding: 4px 10px 4px 5px; vertical-align: middle; font-weight: normal; ');
-    GM_addStyle('a#fles-settings { display: block !important; }');
-    GM_addStyle('a.fles-link { cursor: pointer; }');
-    GM_addStyle('button.fles-button { margin: 1%; border-color: black; border-radius: 5px; background-color: #777; }');
-    GM_addStyle('button#fles-close { }');
-    GM_addStyle('ul#fles-toc-list { list-style-type: none; }');
-    GM_addStyle('ul#fles-toc-list > li { margin-top: 10%; cursor: pointer; }');
-    GM_addStyle('h1#fles-header { line-height: 36px; font-family: serif; font-weight: bold; font-size: 2em; letter-spacing: 0px; color: #CC0000; text-decoration: underline; text-decoration-color: #777; }');
-    GM_addStyle('h3.fles-toc-h3 { margin: 0; padding: 0; line-height: 26px; font-size: 26px; font-weight: normal; letter-spacing: -1px; color: #777; }');
-    GM_addStyle('h3.fles-toc-h3-active { color: #FFF; }');
-
     // asterisk icon courtesy of https://fontawesome.com
     // Usage license: https://fontawesome.com/license
     const asteriskIcon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">' +
@@ -258,6 +239,12 @@ function addFlesSettings(){
         notifyBar.insertAdjacentHTML('beforeEnd', '<a id="fles-settings" class="fl-nav__notification fl-nav__icon ' +
             'knockout-bound" title="FLES Settings">' + asteriskIcon + '</a>');
     }
+    GM_addStyle(
+        'a#fles-settings { display: block !important; }' +
+        'div#fles-menu { box-sizing: content-box !important; position: fixed; ' +
+            'display: none; flex-direction: column; top: 1%; left: 1%; right: 1%; height: 350px; padding: 1%; ' +
+            'border: solid 2px #CC0000; ' + 'border-radius: 10px; background-color: rgba(0,0,0,0.9); ' +
+            'z-index: 100000000; } ');
     notifyBar.querySelector('a#fles-settings').addEventListener('click', openFlesSettings);
     document.querySelector('body').insertAdjacentHTML('beforeEnd', '<div id="fles-menu"</div>');
     const flesMenu = document.querySelector('div#fles-menu');
@@ -268,6 +255,7 @@ function addFlesSettings(){
     flesFooter.insertAdjacentHTML('beforeEnd', '<button id="fles-close" class="fles-button">Close Settings</button>');
     flesFooter.querySelector('button#fles-close').addEventListener('click',function(){
         flesMenu.style.display = 'none';
+        document.getElementById('fles-menu-normalize').parentElement.removeChild(document.getElementById('fles-menu-normalize'));
         document.querySelector('a#fles-settings').addEventListener('click', openFlesSettings);
     });
     const flesContent = document.querySelector('div#fles-content');
@@ -286,6 +274,37 @@ function addFlesSettings(){
 }
 
 function openFlesSettings() {
+    // Set up normalization style sheet
+    const htmlHead = document.querySelector('html head');
+    htmlHead.insertAdjacentHTML('beforeEnd','<style id="fles-menu-normalize">' + GM_getResourceText('normalize4ab3de5') + '</style>');
+
+    // Set up FLES style sheet
+    GM_addStyle(
+        'div#fles-header { display: inherit; margin: 1%; flex: 0 0 70px; } ' +
+        'div#fles-content { display: inherit; flex: 0 0 230px; } ' +
+        'div#fles-footer { display: inherit; flex: 0 0 50px; justify-content: flex-end; } ' +
+        'div#fles-toc { } ' +
+        'div#fles-body { margin: 1em; } ' +
+        'div#fles-body p { margin: 0; } ' +
+        'table#fles-settings { width: auto; margin: 1em; vertical-align: middle; border-collapse: separate; ' +
+            'border-spacing: 0; } ' +
+        'table#fles-settings th.section_header { border-bottom: 1px solid #555; font-weight: normal; ' +
+            'vertical-align: top; padding: 4px 10px 4px 5px; } ' +
+        'table#fles-settings td { padding: 4px 10px 4px 5px; vertical-align: middle; text-align: left; ' +
+            'font-weight: normal; } ' +
+        'table#fles-settings td.option { text-align: center; padding: 4px 10px 4px 5px; vertical-align: middle; ' +
+            'font-weight: normal; } ' +
+        'a.fles-link { cursor: pointer; } ' +
+        'button.fles-button { margin: 1%; border-color: black; border-radius: 5px; background-color: #777; } ' +
+        'button#fles-close { } ' +
+        'ul#fles-toc-list { list-style-type: none; } ' +
+        'ul#fles-toc-list > li { margin-top: 10%; cursor: pointer; } ' +
+        'h1#fles-header { line-height: 36px; font-family: serif; font-weight: bold; font-size: 2em; ' +
+            'letter-spacing: 0px; color: #CC0000; text-decoration: underline; text-decoration-color: #777; } ' +
+        'h3.fles-toc-h3 { margin: 0; padding: 0; line-height: 26px; font-size: 26px; font-weight: normal; ' +
+            'letter-spacing: -1px; color: #777; } ' +
+        'h3.fles-toc-h3-active { color: #FFF; }');
+
     document.querySelector('a#fles-settings').removeEventListener('click', openFlesSettings);
     document.querySelector('div#fles-menu').style.display = 'flex';
 }
