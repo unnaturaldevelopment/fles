@@ -294,7 +294,6 @@ function openFlesSettings() {
             'font-weight: normal; } ' +
         'table#fles-settings td.option { text-align: center; padding: 4px 10px 4px 5px; vertical-align: middle; ' +
             'font-weight: normal; } ' +
-        'a.fles-link { cursor: pointer; } ' +
         'button.fles-button { margin: 1%; border-color: black; border-radius: 5px; background-color: #777; } ' +
         'button#fles-close { } ' +
         'ul#fles-toc-list { list-style-type: none; } ' +
@@ -399,6 +398,7 @@ function switchSetting() {
 
 // Add FLES Settings to all pages
 addFlesSettings();
+GM_addStyle('a.fles-link { cursor: pointer; } ');
 
 switch(returnPageType(document.location)) {
     case 'groupPage':
