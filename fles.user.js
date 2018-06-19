@@ -19,7 +19,6 @@
 // @author unnaturaldeveloper
 // ==/OpenUserJS==
 function returnPageType( pageLocation ) {
-    const homeRE = RegExp('^https://fetlife.com/home.*$');
     const groupRE = RegExp('^https://fetlife.com/groups$');
     const groupSubRE = RegExp('^https://fetlife.com/groups/[0-9]*.*$');
     const profileRE = RegExp('^https://fetlife.com/users/[0-9]*$');
