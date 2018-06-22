@@ -105,11 +105,31 @@ function adjustSubGroup() {
         sidebarDiv.querySelector('a#fles-group-enable-inline-image-thread').addEventListener('click',function(){ toggleInlineImage('thread'); });
 
     }
+
+    // Add reply to original poster in group discussion
+    if( GM_getValue('reply-to-op-in-subgroup') ) {
+        const originalPostMeta = document.querySelector('div.group_post div.may_contain_youtubes p.quiet.small');
+        originalPostMeta.insertAdjacentHTML('beforeEnd','<span class="fl-text-separator--dot">&nbsp;<a class="quiet fles-link">Reply</a></span>');
+        const replyToOP = originalPostMeta.querySelector('span a.fles-link');
+        replyToOP.addEventListener('click', multyReplyInsert);
+    }
 }
 function multyReplyInsert(event) {
+    let pName = '';
+    if(event.srcElement.innerText === 'Reply')
+    {
+        pName = event.srcElement.parentElement.parentElement.firstElementChild.innerHTML;
+
+    }
+    else if(event.srcElement.innerText === 'Multi-Reply')
+    {
+        pName = event.target.getAttribute('data-comment-author-nickname');
+    }
+
     let commentBox = document.querySelector('div#new_group_post_comment_container div#new_comment form fieldset p textarea');
-    commentBox.value = commentBox.value + ' @' + event.target.getAttribute('data-comment-author-nickname') + ' ';
+    commentBox.value = commentBox.value + ' @' + pName + ' ';
     commentBox.focus();
+
 }
 function toggleInlineImage(position) {
     const pictureRE = RegExp('^https://fetlife.com/users/[0-9]*/pictures/[0-9]*$');
@@ -364,8 +384,9 @@ function switchSetting() {
             groupNode.insertAdjacentHTML('beforeEnd', '<table id="fles-settings"><tbody>' +
                 '<tr id="group_options"><th class="section_header">Group Options</th><th class="section_header">Enabled?</th></tr>' +
                 '<tr><td><label for="group_new_discussion">Redirect to new discussions when visiting group</label></td><td class="option"><input type="checkbox" id="group_new_discussion" name="group_new_discussion"/></td></tr>' +
-                '<tr><td><label for="multi-reply-in-subgroup">Enable multi-reply in group discussion</label></td><td class="option"><input type="checkbox" id="multi-reply-in-subgroup" name="multi-reply-in-subgroup"/></td></tr>' +
                 '<tr><td><label for="inline-image-in-subgroup">Enable ability to toggle inline images in group discussion</label></td><td class="option"><input type="checkbox" id="inline-image-in-subgroup" name="inline-image-in-subgroup"/></td></tr>' +
+                '<tr><td><label for="multi-reply-in-subgroup">Enable multi-reply in group discussion</label></td><td class="option"><input type="checkbox" id="multi-reply-in-subgroup" name="multi-reply-in-subgroup"/></td></tr>' +
+                '<tr><td><label for="reply-to-op-in-subgroup">Enable ability to reply to the original poster in a group discussion</label></td><td class="option"><input type="checkbox" id="reply-to-op-in-subgroup" name="reply-to-op-in-subgroup"/></td></tr>' +
                 '</tbody></table>');
             if( flesBody.firstElementChild ) {
                 flesBody.replaceChild(groupNode, flesBody.firstElementChild);
