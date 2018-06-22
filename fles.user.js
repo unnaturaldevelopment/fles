@@ -83,9 +83,7 @@ function adjustSubGroup() {
     // Enable multi-reply
     if( GM_getValue('multi-reply-in-subgroup') ) {
         const commentList = document.querySelectorAll('section#comments article div.fl-flag__body footer.fl-comment__actions span span.fl-text-separator--dot a[data-comment-author-nickname]');
-        // console.log(commentList);
         commentList.forEach(function(comment){
-            // console.log(comment);
             let multiReplyElement = comment.parentElement.cloneNode(true);
             multiReplyElement.firstElementChild.innerHTML = 'Multi-Reply';
             multiReplyElement.firstElementChild.removeAttribute('href');
