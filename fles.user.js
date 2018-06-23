@@ -4,23 +4,27 @@
 // @license     GPL-3.0
 // @homepageURL https://github.com/unnaturaldevelopment/fles
 // @supportURL  https://github.com/unnaturaldevelopment/fles/issues
-// @version     1.1.2
+// @version     1.2-beta.3
 // @updateURL   https://openuserjs.org/meta/unnaturaldeveloper/FetLife_Enhancement_Suite.meta.js
 // @namespace   unnaturaldevelopment
 // @match       https://fetlife.com/*
+// @resource    normalize4ab3de5 https://cdn.rawgit.com/necolas/normalize.css/4ab3de5bdd26b161c3c82a5a2f72df3e57a8e4bf/normalize.css#md5=fda27b856c2e3cada6e0f6bfeccc2067,sha1=734a72e6c28d4a3a870404fb4abf72723c754296,sha512=faa0766a27f822e530f9cd2d1f9c3b8989abeefe8027e14b52aaf6c1faf732cf633fa2062926613b487807db84a418754ee3ede81a3c1cb593940157d6f71c65
 // @grant       GM_addStyle
 // @grant       GM_setValue
 // @grant       GM_getValue
+// @grant       GM_getResourceText
 // @grant       GM_xmlhttpRequest
 // ==/UserScript==
 // ==OpenUserJS==
 // @author unnaturaldeveloper
 // ==/OpenUserJS==
 function returnPageType( pageLocation ) {
-    const homeRE = RegExp('^https://fetlife.com/home.*$');
     const groupRE = RegExp('^https://fetlife.com/groups$');
     const groupSubRE = RegExp('^https://fetlife.com/groups/[0-9]*.*$');
     const profileRE = RegExp('^https://fetlife.com/users/[0-9]*$');
+    const convNewRE = RegExp('^https://fetlife.com/conversations/new.*$');
+    const inboxRE = RegExp('^https://fetlife.com/inbox.*$');
+    const settingsRespRE = RegExp('^https://fetlife.com/settings/responsive/.*$');
     if( groupRE.test(pageLocation) )
     {
         return 'groupPage';
@@ -29,19 +33,24 @@ function returnPageType( pageLocation ) {
     {
         return 'subGroup';
     }
-    else if( homeRE.test( pageLocation) )
-    {
-        return 'home';
-    }
     else if( profileRE.test( pageLocation ) )
     {
         return 'profile';
     }
-    else {
-        return 'all';
+    else if( convNewRE.test( pageLocation ) )
+    {
+        return 'conversation-new';
+    }
+    else if( inboxRE.test( pageLocation ) )
+    {
+        return 'inbox';
+    }
+    else if( settingsRespRE.test( pageLocation ) )
+    {
+        return 'settingsResp';
     }
 }
-function adjustGroupPage() {
+function adjustGroup() {
     // Replace 'ago' with actual timestamp
     if( GM_getValue('timestamp_groups') ) {
         const timestampList = document.getElementsByClassName('refresh-timestamp');
@@ -59,7 +68,7 @@ function adjustGroupPage() {
         }
     }
 }
-function adjustSubGroupPage() {
+function adjustSubGroup() {
     // Replace 'ago' with actual timestamp
     if( GM_getValue('timestamp_group') ) {
         const timestampList = document.getElementsByClassName('refresh-timestamp');
@@ -70,9 +79,91 @@ function adjustSubGroupPage() {
             }
         }
     }
+
+    // Enable multi-reply
+    if( GM_getValue('multi-reply-in-subgroup') ) {
+        const commentList = document.querySelectorAll('section#comments article div.fl-flag__body footer.fl-comment__actions span span.fl-text-separator--dot a[data-comment-author-nickname]');
+        commentList.forEach(function(comment){
+            let multiReplyElement = comment.parentElement.cloneNode(true);
+            multiReplyElement.firstElementChild.innerHTML = 'Multi-Reply';
+            multiReplyElement.firstElementChild.removeAttribute('href');
+            multiReplyElement.firstElementChild.removeAttribute('data-comment-reply');
+            multiReplyElement.firstElementChild.classList.add('fles-link');
+            multiReplyElement.addEventListener('click', multyReplyInsert);
+            comment.parentElement.insertAdjacentElement('beforeEnd',multiReplyElement);
+        });
+    }
+
+    // Enable viewing of image inline
+    if( GM_getValue('inline-image-in-subgroup') ) {
+        const sidebarDiv = document.querySelector('a#report_discussion_button').parentElement;
+        const toggleInlineButtonOP = '<br><br><a id="fles-group-enable-inline-image-op" class="fles-link xq xs tdn">View images in original post</a>';
+        sidebarDiv.insertAdjacentHTML('beforeEnd',toggleInlineButtonOP);
+        sidebarDiv.querySelector('a#fles-group-enable-inline-image-op').addEventListener('click',function(){ toggleInlineImage('op'); });
+        const toggleInlineButtonThread = '<br><br><a id="fles-group-enable-inline-image-thread" class="fles-link xq xs tdn">View images in thread</a>';
+        sidebarDiv.insertAdjacentHTML('beforeEnd',toggleInlineButtonThread);
+        sidebarDiv.querySelector('a#fles-group-enable-inline-image-thread').addEventListener('click',function(){ toggleInlineImage('thread'); });
+
+    }
+
+    // Add reply to original poster in group discussion
+    if( GM_getValue('reply-to-op-in-subgroup') ) {
+        const originalPostMeta = document.querySelector('div.group_post div.may_contain_youtubes p.quiet.small');
+        originalPostMeta.insertAdjacentHTML('beforeEnd','<span class="fl-text-separator--dot">&nbsp;<a class="quiet fles-link">Reply</a></span>');
+        const replyToOP = originalPostMeta.querySelector('span a.fles-link');
+        replyToOP.addEventListener('click', multyReplyInsert);
+    }
 }
-function adjustHomePage() {
-    // TODO: Add functionality exclusively to home page
+function multyReplyInsert(event) {
+    let pName = '';
+    if(event.srcElement.innerText === 'Reply')
+    {
+        pName = event.srcElement.parentElement.parentElement.firstElementChild.innerHTML;
+
+    }
+    else if(event.srcElement.innerText === 'Multi-Reply')
+    {
+        pName = event.target.getAttribute('data-comment-author-nickname');
+    }
+    let commentBox = document.querySelector('div#new_group_post_comment_container div#new_comment form fieldset p textarea');
+    commentBox.value = commentBox.value + ' @' + pName + ' ';
+    commentBox.focus();
+
+}
+function toggleInlineImage(position) {
+    const pictureRE = RegExp('^https://fetlife.com/users/[0-9]*/pictures/[0-9]*$');
+    let imageList = '';
+
+    switch(position) {
+        case 'op' : {
+            imageList = document.querySelectorAll('div.may_contain_youtubes a');
+            break;
+        }
+        case 'thread' : {
+            imageList = document.querySelectorAll('div#group_post_comments_container section#comments a');
+            break;
+        }
+    }
+
+    imageList.forEach(function(image){
+        let imageLink = image.getAttribute('href');
+        // console.log('imageLink: ' + imageLink);
+        if( pictureRE.test(imageLink))
+        {
+            GM_xmlhttpRequest({
+                method: 'GET',
+                url: imageLink,
+                onload: function handleResponse(response) {
+                    const imageDOM = new DOMParser().parseFromString(response.responseText, 'text/html');
+                    let imgSrc = imageDOM.querySelector('figure.fl-picture a img[src]');
+                    image.removeAttribute('title');
+                    image.text = '';
+                    imgSrc.classList.remove('fl-disable-interaction');
+                    image.insertAdjacentElement('afterBegin',imgSrc);
+                }
+            });
+        }
+    });
 }
 function adjustProfile() {
     if( GM_getValue('redirect_avatar_to_gallery')) {
@@ -102,29 +193,37 @@ function adjustProfile() {
         });
     }
 }
+function adjustNewConv() {
+    // Enable automatic message box cursor placement for new messages
+    if( GM_getValue('pm_message_box_cursor_new')) {
+        const messageBox = document.querySelector('form#new_conversation input#subject');
+        messageBox.focus();
+    }
+}
+function adjustExistingConv() {
+    // Enable automatic message box cursor placement for active conversations
+    if( GM_getValue('pm_message_box_cursor_active')) {
+        const messageBox = document.querySelector('div.message_body div.input-group textarea[name=body');
+        messageBox.focus();
+    }
+}
+function adjustInbox() {
+    // Listen for turbolinks:click to conversation#new-message
+    const convRE = RegExp('https://fetlife.com/conversations/[0-9]*.*$');
+    document.addEventListener('turbolinks:load',function(){
+        if(convRE.test(event.data.url)) {
+            adjustExistingConv();
+        }
+        addFlesSettings();
+    });
+}
+function adjustSettingsResp() {
+    document.addEventListener('turbolinks:load',function() {
+        addFlesSettings();
+    });
+}
 
 function addFlesSettings(){
-    GM_addStyle('div#fles-menu { position: fixed; display: none; flex-direction: column; top: 1%; left: 1%; right: 1%; height: 350px; padding: 1%; border: solid 2px #CC0000; border-radius: 10px; background-color: rgba(0,0,0,0.9); z-index: 100000000; }');
-    GM_addStyle('div#fles-header { display: inherit; margin: 1%; flex: 0 0 70px; }');
-    GM_addStyle('div#fles-content { display: inherit; flex: 0 0 230px; }');
-    GM_addStyle('div#fles-footer { display: inherit; flex: 0 0 50px; justify-content: flex-end; }');
-    GM_addStyle('div#fles-toc { }');
-    GM_addStyle('div#fles-body { margin: 1em; }');
-    GM_addStyle('div#fles-body p { margin: 0; }');
-    GM_addStyle('table#fles-settings { width: auto; margin: 1em; vertical-align: middle; border-collapse: separate; border-spacing: 0; }');
-    GM_addStyle('table#fles-settings th.section_header { border-bottom: 1px solid #555; font-weight: normal; vertical-align: top; padding: 4px 10px 4px 5px; } ');
-    GM_addStyle('table#fles-settings td { padding: 4px 10px 4px 5px; vertical-align: middle; text-align: left; font-weight: normal; } ');
-    GM_addStyle('table#fles-settings td.option { text-align: center; padding: 4px 10px 4px 5px; vertical-align: middle; font-weight: normal; ');
-    GM_addStyle('a#fles-settings { }');
-    GM_addStyle('button.fles-button { margin: 1%; border-color: black; border-radius: 5px; background-color: #777; }');
-    GM_addStyle('button#fles-close { }');
-    GM_addStyle('ul#fles-toc-list { list-style-type: none; }');
-    GM_addStyle('ul#fles-toc-list > li { margin-top: 10%; cursor: pointer; }');
-    GM_addStyle('h1#fles-header { line-height: 36px; font-family: serif; font-weight: bold; font-size: 2em; letter-spacing: 0px; color: #CC0000; text-decoration: underline; text-decoration-color: #777; }');
-    GM_addStyle('h3.fles-toc-h3 { margin: 0; padding: 0; line-height: 26px; font-size: 26px; font-weight: normal; letter-spacing: -1px; color: #777; }');
-    GM_addStyle('h3.fles-toc-h3-active { color: #FFF; }');
-
-    const notifyBar = document.querySelector('div.fl-nav__right-hand-wrapper div.fl-nav__notifications-wrapper');
     // asterisk icon courtesy of https://fontawesome.com
     // Usage license: https://fontawesome.com/license
     const asteriskIcon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">' +
@@ -136,8 +235,32 @@ function addFlesSettings(){
         '8.523L216 325.282l-3.475 162.204C212.237 500.939 223.064 512 236.52 512h38.961c13.456 0 24.283-11.061 ' +
         '23.995-24.514L296 325.282l138.735 84.111c11.506 6.976 26.499 3.13 33.227-8.523l19.48-33.741c6.728-11.653 ' +
         '2.563-26.559-9.232-33.036z"/></svg>';
-    notifyBar.insertAdjacentHTML('beforeEnd', '<a id="fles-settings" class="fl-nav__notification fl-nav__icon ' +
-        'knockout-bound" title="FLES Settings">' + asteriskIcon + '</a>');
+
+    let notifyBar;
+    if( (notifyBar = document.querySelector('body nav div.self-end ul.list li a[href="/search"]')) !== null )
+    {
+        // /inbox and /conversations/.* are using a new responsive design for the navbar... compensating
+        notifyBar = notifyBar.parentElement;
+        const flesNavElement = notifyBar.cloneNode(false);
+        const flesNavAnchor = notifyBar.firstElementChild.cloneNode(false);
+        flesNavAnchor.id = 'fles-settings';
+        flesNavAnchor.removeAttribute('href');
+        flesNavAnchor.insertAdjacentHTML('afterBegin',asteriskIcon);
+        flesNavElement.insertAdjacentElement('afterBegin',flesNavAnchor);
+        notifyBar.insertAdjacentElement('beforeBegin',flesNavElement);
+        notifyBar = notifyBar.parentElement; // Necessary hack to find the FLES icon
+    }
+    else {
+        notifyBar = document.querySelector('div.fl-nav__right-hand-wrapper div.fl-nav__notifications-wrapper');
+        notifyBar.insertAdjacentHTML('beforeEnd', '<a id="fles-settings" class="fl-nav__notification fl-nav__icon ' +
+            'knockout-bound" title="FLES Settings">' + asteriskIcon + '</a>');
+    }
+    GM_addStyle(
+        'a#fles-settings { display: block !important; }' +
+        'div#fles-menu { box-sizing: content-box !important; position: fixed; ' +
+            'display: none; flex-direction: column; top: 1%; left: 1%; right: 1%; height: 350px; padding: 1%; ' +
+            'border: solid 2px #CC0000; ' + 'border-radius: 10px; background-color: rgba(0,0,0,0.9); ' +
+            'z-index: 100000000; } ');
     notifyBar.querySelector('a#fles-settings').addEventListener('click', openFlesSettings);
     document.querySelector('body').insertAdjacentHTML('beforeEnd', '<div id="fles-menu"</div>');
     const flesMenu = document.querySelector('div#fles-menu');
@@ -148,6 +271,7 @@ function addFlesSettings(){
     flesFooter.insertAdjacentHTML('beforeEnd', '<button id="fles-close" class="fles-button">Close Settings</button>');
     flesFooter.querySelector('button#fles-close').addEventListener('click',function(){
         flesMenu.style.display = 'none';
+        document.getElementById('fles-menu-normalize').parentElement.removeChild(document.getElementById('fles-menu-normalize'));
         document.querySelector('a#fles-settings').addEventListener('click', openFlesSettings);
     });
     const flesContent = document.querySelector('div#fles-content');
@@ -166,6 +290,36 @@ function addFlesSettings(){
 }
 
 function openFlesSettings() {
+    // Set up normalization style sheet
+    const htmlHead = document.querySelector('html head');
+    htmlHead.insertAdjacentHTML('beforeEnd','<style id="fles-menu-normalize">' + GM_getResourceText('normalize4ab3de5') + '</style>');
+
+    // Set up FLES style sheet
+    GM_addStyle(
+        'div#fles-header { display: inherit; margin: 1%; flex: 0 0 70px; } ' +
+        'div#fles-content { display: inherit; flex: 0 0 230px; } ' +
+        'div#fles-footer { display: inherit; flex: 0 0 50px; justify-content: flex-end; } ' +
+        'div#fles-toc { } ' +
+        'div#fles-body { margin: 1em; } ' +
+        'div#fles-body p { margin: 0; } ' +
+        'table#fles-settings { width: auto; margin: 1em; vertical-align: middle; border-collapse: separate; ' +
+            'border-spacing: 0; } ' +
+        'table#fles-settings th.section_header { border-bottom: 1px solid #555; font-weight: normal; ' +
+            'vertical-align: top; padding: 4px 10px 4px 5px; } ' +
+        'table#fles-settings td { padding: 4px 10px 4px 5px; vertical-align: middle; text-align: left; ' +
+            'font-weight: normal; } ' +
+        'table#fles-settings td.option { text-align: center; padding: 4px 10px 4px 5px; vertical-align: middle; ' +
+            'font-weight: normal; } ' +
+        'button.fles-button { margin: 1%; border-color: black; border-radius: 5px; background-color: #777; } ' +
+        'button#fles-close { } ' +
+        'ul#fles-toc-list { list-style-type: none; } ' +
+        'ul#fles-toc-list > li { margin-top: 10%; cursor: pointer; } ' +
+        'h1#fles-header { line-height: 36px; font-family: serif; font-weight: bold; font-size: 2em; ' +
+            'letter-spacing: 0px; color: #CC0000; text-decoration: underline; text-decoration-color: #777; } ' +
+        'h3.fles-toc-h3 { margin: 0; padding: 0; line-height: 26px; font-size: 26px; font-weight: normal; ' +
+            'letter-spacing: -1px; color: #777; } ' +
+        'h3.fles-toc-h3-active { color: #FFF; }');
+
     document.querySelector('a#fles-settings').removeEventListener('click', openFlesSettings);
     document.querySelector('div#fles-menu').style.display = 'flex';
 }
@@ -226,7 +380,13 @@ function switchSetting() {
         case 'fles-toc-groups': {
             let groupNode = document.createElement('span');
             groupNode.insertAdjacentHTML('afterBegin','<p>The settings below are designed to improve an aspect of group pages.</p>');
-            groupNode.insertAdjacentHTML('beforeEnd', '<table id="fles-settings"><tbody><tr id="group_options"><th class="section_header">Group Options</th><th class="section_header">Enabled?</th></tr><tr><td><label for="group_new_discussion">Redirect to new discussions when visiting group</label></td><td class="option"><input type="checkbox" id="group_new_discussion" name="group_new_discussion"/></td></tr></tbody></table>');
+            groupNode.insertAdjacentHTML('beforeEnd', '<table id="fles-settings"><tbody>' +
+                '<tr id="group_options"><th class="section_header">Group Options</th><th class="section_header">Enabled?</th></tr>' +
+                '<tr><td><label for="group_new_discussion">Redirect to new discussions when visiting group</label></td><td class="option"><input type="checkbox" id="group_new_discussion" name="group_new_discussion"/></td></tr>' +
+                '<tr><td><label for="inline-image-in-subgroup">Enable ability to toggle inline images in group discussion</label></td><td class="option"><input type="checkbox" id="inline-image-in-subgroup" name="inline-image-in-subgroup"/></td></tr>' +
+                '<tr><td><label for="multi-reply-in-subgroup">Enable multi-reply in group discussion</label></td><td class="option"><input type="checkbox" id="multi-reply-in-subgroup" name="multi-reply-in-subgroup"/></td></tr>' +
+                '<tr><td><label for="reply-to-op-in-subgroup">Enable ability to reply to the original poster in a group discussion</label></td><td class="option"><input type="checkbox" id="reply-to-op-in-subgroup" name="reply-to-op-in-subgroup"/></td></tr>' +
+                '</tbody></table>');
             if( flesBody.firstElementChild ) {
                 flesBody.replaceChild(groupNode, flesBody.firstElementChild);
             }
@@ -236,7 +396,13 @@ function switchSetting() {
         }
         case 'fles-toc-messaging': {
             let messageNode = document.createElement('span');
-            messageNode.insertAdjacentHTML('afterBegin','Coming soon!');
+            // pm_message_box_cursor
+            messageNode.insertAdjacentHTML('afterBegin','<p>The settings below are designed to improve an aspect of the private messaging interface.</p>');
+            messageNode.insertAdjacentHTML('beforeEnd', '<table id="fles-settings"><tbody>' +
+                '<tr id="pm_options"><th class="section_header">Private Message Options</th><th class="section_header">Enabled?</th></tr>' +
+                '<tr><td><label for="pm_message_box_cursor_new">Enable automatic message box cursor placement for new message</label></td><td class="option"><input type="checkbox" id="pm_message_box_cursor_new" name="pm_message_box_cursor_new"/></td></tr>' +
+                '<tr><td><label for="pm_message_box_cursor_active">Enable automatic message box cursor placement for active conversation</label></td><td class="option"><input type="checkbox" id="pm_message_box_cursor_active" name="pm_message_box_cursor_active"/></td></tr>' +
+                '</tbody></table>');
             if( flesBody.firstElementChild ) {
                 flesBody.replaceChild(messageNode, flesBody.firstElementChild);
             }
@@ -247,23 +413,27 @@ function switchSetting() {
     }
 }
 
+// Add FLES Settings to all pages
+addFlesSettings();
+GM_addStyle('a.fles-link { cursor: pointer; } ');
+
 switch(returnPageType(document.location)) {
     case 'groupPage':
-        addFlesSettings();
-        adjustGroupPage();
+        adjustGroup();
         break;
     case 'subGroup':
-        addFlesSettings();
-        adjustSubGroupPage();
-        break;
-    case 'home':
-        addFlesSettings();
-        adjustHomePage();
+        adjustSubGroup();
         break;
     case 'profile':
-        addFlesSettings();
         adjustProfile();
         break;
-    default:
-        addFlesSettings();
+    case 'conversation-new':
+        adjustNewConv();
+        break;
+    case 'inbox':
+        adjustInbox();
+        break;
+    case 'settingsResp':
+        adjustSettingsResp();
+        break;
 }
