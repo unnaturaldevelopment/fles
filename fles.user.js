@@ -119,9 +119,9 @@ function multyReplyInsert(Event) {
     {
         pName = Event.target.parentElement.parentElement.firstElementChild.innerHTML;
     }
-    else if(event.srcElement.innerText === 'Multi-Reply')
+    else if(Event.target.text === 'Multi-Reply')
     {
-        pName = event.target.getAttribute('data-comment-author-nickname');
+        pName = Event.target.getAttribute('data-comment-author-nickname');
     }
     let commentBox = document.querySelector('div#new_group_post_comment_container div#new_comment form fieldset p textarea');
     commentBox.value = commentBox.value + ' @' + pName + ' ';
