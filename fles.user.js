@@ -110,16 +110,14 @@ function adjustSubGroup() {
     if( GM_getValue('reply-to-op-in-subgroup') ) {
         const originalPostMeta = document.querySelector('div.group_post div.may_contain_youtubes p.quiet.small');
         originalPostMeta.insertAdjacentHTML('beforeEnd','<span class="fl-text-separator--dot">&nbsp;<a class="quiet fles-link">Reply</a></span>');
-        const replyToOP = originalPostMeta.querySelector('span a.fles-link');
-        replyToOP.addEventListener('click', multyReplyInsert);
+        $('div.group_post div.may_contain_youtubes p.quiet.small span a.fles-link').click(multyReplyInsert);
     }
 }
-function multyReplyInsert(event) {
+function multyReplyInsert(Event) {
     let pName = '';
-    if(event.srcElement.innerText === 'Reply')
+    if(Event.target.text === 'Reply')
     {
-        pName = event.srcElement.parentElement.parentElement.firstElementChild.innerHTML;
-
+        pName = Event.target.parentElement.parentElement.firstElementChild.innerHTML;
     }
     else if(event.srcElement.innerText === 'Multi-Reply')
     {
