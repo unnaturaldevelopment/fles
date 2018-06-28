@@ -112,6 +112,20 @@ function adjustSubGroup() {
         originalPostMeta.insertAdjacentHTML('beforeEnd','<span class="fl-text-separator--dot">&nbsp;<a class="quiet fles-link">Reply</a></span>');
         $('div.group_post div.may_contain_youtubes p.quiet.small span a.fles-link').click(multyReplyInsert);
     }
+
+    // Add ability to quote via copy/paste
+    if( GM_getValue('quote-in-group') ) {
+        const postBody = document.querySelector('div.group_post div.may_contain_youtubes');
+        postBody.addEventListener('copy', function () {
+            GM_setValue('text-to-quote', window.getSelection().toString());
+        });
+        const comments = document.querySelectorAll('div.fl-comment__text');
+        comments.forEach(function (comment) {
+            comment.addEventListener('copy', function () {
+                GM_setValue('text-to-quote', window.getSelection().toString());
+            });
+        });
+    }
 }
 function multyReplyInsert(Event) {
     let pName = '';
@@ -123,10 +137,18 @@ function multyReplyInsert(Event) {
     {
         pName = Event.target.getAttribute('data-comment-author-nickname');
     }
-    let commentBox = document.querySelector('div#new_group_post_comment_container div#new_comment form fieldset p textarea');
-    commentBox.value = commentBox.value + ' @' + pName + ' ';
+    let commentBox = $('div#new_group_post_comment_container div#new_comment form fieldset p textarea');
+    let textToQuote = GM_getValue('text-to-quote');
+    textToQuote = textToQuote.replace(/^(\S.*)/gm,'> $1');
     commentBox.focus();
 
+    let commentBoxText = commentBox.val();
+    if( textToQuote !== '')
+    {
+        commentBox.val(commentBox.val() + textToQuote + ' -');
+        GM_setValue('text-to-quote','');
+    }
+    commentBox.val(commentBox.val() + ' @' + pName + ' \n\n');
 }
 function toggleInlineImage(position) {
     const pictureRE = RegExp('^https://fetlife.com/users/[0-9]*/pictures/[0-9]*$');
@@ -384,6 +406,7 @@ function switchSetting() {
                 '<tr><td><label for="inline-image-in-subgroup">Enable ability to toggle inline images in group discussion</label></td><td class="option"><input type="checkbox" id="inline-image-in-subgroup" name="inline-image-in-subgroup"/></td></tr>' +
                 '<tr><td><label for="multi-reply-in-subgroup">Enable multi-reply in group discussion</label></td><td class="option"><input type="checkbox" id="multi-reply-in-subgroup" name="multi-reply-in-subgroup"/></td></tr>' +
                 '<tr><td><label for="reply-to-op-in-subgroup">Enable ability to reply to the original poster in a group discussion</label></td><td class="option"><input type="checkbox" id="reply-to-op-in-subgroup" name="reply-to-op-in-subgroup"/></td></tr>' +
+                '<tr><td><label for="quote-in-group">Enable ability to quote directly into the message box via copy/paste</label></td><td class="option"><input type="checkbox" id="quote-in-group" name="quote-in-group"/></td></tr>' +
                 '</tbody></table>');
             if( flesBody.firstElementChild ) {
                 flesBody.replaceChild(groupNode, flesBody.firstElementChild);
