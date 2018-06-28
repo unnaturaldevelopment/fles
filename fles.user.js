@@ -231,7 +231,7 @@ function adjustInbox() {
     // Listen for turbolinks:click to conversation#new-message
     const convRE = RegExp('https://fetlife.com/conversations/[0-9]*.*$');
     document.addEventListener('turbolinks:load',function(){
-        if(convRE.test(event.data.url)) {
+        if(convRE.test(window.location.href)) {
             adjustExistingConv();
         }
         addFlesSettings();
