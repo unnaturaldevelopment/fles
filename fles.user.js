@@ -19,19 +19,24 @@
 // @author unnaturaldeveloper
 // ==/OpenUserJS==
 function returnPageType( pageLocation ) {
-    const groupRE = RegExp('^https://fetlife.com/groups$');
+    const groupsRE = RegExp('^https://fetlife.com/groups$');
     const groupSubRE = RegExp('^https://fetlife.com/groups/[0-9]*.*$');
+    const groupPostRE = RegExp('^https://fetlife.com/groups/[0-9]*/group_posts/[0-9]*')
     const profileRE = RegExp('^https://fetlife.com/users/[0-9]*$');
     const convNewRE = RegExp('^https://fetlife.com/conversations/new.*$');
     const inboxRE = RegExp('^https://fetlife.com/inbox.*$');
     const settingsRespRE = RegExp('^https://fetlife.com/settings/responsive/.*$');
-    if( groupRE.test(pageLocation) )
+    if( groupPostRE.test( pageLocation ) )
     {
-        return 'groupPage';
+        return 'groupPost';
     }
     else if( groupSubRE.test( pageLocation ) )
     {
-        return 'subGroup';
+        return 'groupPage';
+    }
+    else if( groupsRE.test( pageLocation ) )
+    {
+        return 'groupsPage';
     }
     else if( profileRE.test( pageLocation ) )
     {
@@ -118,7 +123,8 @@ function adjustSubGroup() {
             }
         }
     }
-
+}
+function adjustGroupPost() {
     // Enable multi-reply
     if( GM_getValue('multi-reply-in-subgroup') ) {
         const commentList = document.querySelectorAll('section#comments article div.fl-flag__body footer.fl-comment__actions span span.fl-text-separator--dot a[data-comment-author-nickname]');
@@ -479,11 +485,14 @@ addFlesSettings();
 GM_addStyle('a.fles-link { cursor: pointer; } ');
 
 switch(returnPageType(document.location)) {
-    case 'groupPage':
+    case 'groupsPage':
         adjustGroup();
         break;
-    case 'subGroup':
+    case 'groupPage':
         adjustSubGroup();
+        break;
+    case 'groupPost':
+        adjustGroupPost();
         break;
     case 'profile':
         adjustProfile();
