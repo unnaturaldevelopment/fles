@@ -183,17 +183,20 @@ function multyReplyInsert(Event) {
         pName = Event.target.getAttribute('data-comment-author-nickname');
     }
     let commentBox = $('div#new_group_post_comment_container div#new_comment form fieldset p textarea');
-    let textToQuote = GM_getValue('text-to-quote');
-    textToQuote = textToQuote.replace(/^(\S.*)/gm,'> $1');
     commentBox.focus();
 
     let commentBoxText = commentBox.val();
+    let textToQuote = GM_getValue('text-to-quote');
     if( textToQuote !== '')
     {
+        textToQuote = textToQuote.replace(/^(\S.*)/gm,'> $1');
         commentBox.val(commentBox.val() + textToQuote + ' -');
         GM_setValue('text-to-quote','');
+        commentBox.val(commentBox.val() + ' @' + pName + '\n\n');
     }
-    commentBox.val(commentBox.val() + ' @' + pName + ' \n\n');
+    else {
+        commentBox.val(commentBox.val() + '@' + pName + ' ');
+    }
 }
 function toggleInlineImage(position) {
     const pictureRE = RegExp('^https://fetlife.com/users/[0-9]*/pictures/[0-9]*$');
