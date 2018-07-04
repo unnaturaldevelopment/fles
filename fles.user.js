@@ -67,6 +67,45 @@ function adjustGroup() {
             groupListingList[i].href = groupListingList[i] + '?order=discussions';
         }
     }
+    // Add link to latest comment in group
+    if( GM_getValue('group_link_to_last_comment') ) {
+        const discussionsFollowingList = document.querySelectorAll('ul.discussions_following li');
+        discussionsFollowingList.forEach(function (discussion) {
+            let discussionElement = discussion.firstElementChild;
+            let discussionLink = 'https://fetlife.com' + discussionElement.getAttribute('href');
+            GM_xmlhttpRequest({
+                method: 'GET',
+                url: discussionLink,
+                onload: function handleResponse(response) {
+                    const discussionDOM = new DOMParser().parseFromString(response.responseText, 'text/html');
+                    let pagination = discussionDOM.querySelector('div.pagination');
+                    let pageRef = discussionLink;
+                    if (pagination !== null) {
+                        let pages = pagination.querySelectorAll('a:not([class])');
+                        pageRef = 'https://fetlife.com' + (pages[pages.length - 1].getAttribute('href'));
+                    }
+                    GM_xmlhttpRequest({
+                        method: 'GET',
+                        url: pageRef,
+                        onload: function handleResponse(response) {
+                            const pageDOM = new DOMParser().parseFromString(response.responseText, 'text/html');
+                            let comments = pageDOM.querySelectorAll('section#comments article');
+                            if( comments.length !== 0 ) {
+                                let last_comment_id = comments[comments.length - 1].getAttribute('id');
+                                if( pagination !== null) {
+                                    pageRef = pageRef.replace(/#\w*/gm, '#' + last_comment_id + '_anchor');
+                                }
+                                else {
+                                    pageRef = pageRef + '#' + last_comment_id + '_anchor';
+                                }
+                                discussionElement.setAttribute('href', pageRef);
+                            }
+                        }
+                    });
+                }
+            });
+        });
+    }
 }
 function adjustSubGroup() {
     // Replace 'ago' with actual timestamp
@@ -403,6 +442,7 @@ function switchSetting() {
             groupNode.insertAdjacentHTML('beforeEnd', '<table id="fles-settings"><tbody>' +
                 '<tr id="group_options"><th class="section_header">Group Options</th><th class="section_header">Enabled?</th></tr>' +
                 '<tr><td><label for="group_new_discussion">Redirect to new discussions when visiting group</label></td><td class="option"><input type="checkbox" id="group_new_discussion" name="group_new_discussion"/></td></tr>' +
+                '<tr><td><label for="group_link_to_last_comment">Change link for followed discussion to last comment</label></td><td class="option"><input type="checkbox" id="group_link_to_last_comment" name="group_link_to_last_comment"/></td></tr>' +
                 '<tr><td><label for="inline-image-in-subgroup">Enable ability to toggle inline images in group discussion</label></td><td class="option"><input type="checkbox" id="inline-image-in-subgroup" name="inline-image-in-subgroup"/></td></tr>' +
                 '<tr><td><label for="multi-reply-in-subgroup">Enable multi-reply in group discussion</label></td><td class="option"><input type="checkbox" id="multi-reply-in-subgroup" name="multi-reply-in-subgroup"/></td></tr>' +
                 '<tr><td><label for="reply-to-op-in-subgroup">Enable ability to reply to the original poster in a group discussion</label></td><td class="option"><input type="checkbox" id="reply-to-op-in-subgroup" name="reply-to-op-in-subgroup"/></td></tr>' +
