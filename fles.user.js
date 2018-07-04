@@ -236,7 +236,7 @@ function toggleInlineImage(position) {
 }
 function adjustProfile() {
     if( GM_getValue('redirect_avatar_to_gallery')) {
-        const imgLink = document.querySelector('img.pan').src.split(/^https:\/\/\w+.fetlife.com\/\w+\/\w+\/(\w+[-/]\w+-?\w+-?\w+-?[A-Za-z0-9]+)/)[1];
+        const imgLink = document.querySelector('img.pan').src.split(/^https:\/\/pic[0-9].fetlife.com\/[0-9]+\/[0-9]+\/([\w-]+)_[0-9]+.jpg/)[1];
         GM_xmlhttpRequest({
             method: 'GET',
             url: document.location + '/pictures',
@@ -251,7 +251,7 @@ function adjustProfile() {
                             const imageList = new DOMParser().parseFromString(response.responseText, 'text/html');
                             const galleryImages = imageList.querySelector('#pictures').querySelectorAll('ul')[0].children;
                             for (let i = 0; i < galleryImages.length; i++) {
-                                if (galleryImages[i].firstElementChild.firstElementChild.src.split(/^https:\/\/\w+.fetlife.com\/\w+\/\w+\/(\w+[-/]\w+-?\w+-?\w+-?[A-Za-z0-9]+)/)[1] === imgLink) {
+                                if (galleryImages[i].firstElementChild.firstElementChild.src.split(/^https:\/\/pic[0-9].fetlife.com\/[0-9]+\/[0-9]+\/([\w-]+)_[0-9]+.jpg/)[1] === imgLink) {
                                     document.querySelector('img.pan').parentElement.href = galleryImages[i].firstElementChild.href;
                                 }
                             }
