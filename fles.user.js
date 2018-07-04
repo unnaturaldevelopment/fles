@@ -215,7 +215,6 @@ function toggleInlineImage(position) {
 
     imageList.forEach(function(image){
         let imageLink = image.getAttribute('href');
-        // console.log('imageLink: ' + imageLink);
         if( pictureRE.test(imageLink))
         {
             GM_xmlhttpRequest({
