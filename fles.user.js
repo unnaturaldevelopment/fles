@@ -272,7 +272,7 @@ function adjustNewConv() {
 function adjustExistingConv() {
     // Enable automatic message box cursor placement for active conversations
     if( GM_getValue('pm_message_box_cursor_active')) {
-        const messageBox = document.querySelector('div.message_body div.input-group textarea[name=body');
+        const messageBox = document.querySelector('div.message_body div.input-group textarea[name=body]');
         messageBox.focus();
     }
 }
