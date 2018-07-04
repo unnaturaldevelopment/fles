@@ -221,12 +221,14 @@ function toggleInlineImage(position) {
                 method: 'GET',
                 url: imageLink,
                 onload: function handleResponse(response) {
-                    const imageDOM = new DOMParser().parseFromString(response.responseText, 'text/html');
-                    let imgSrc = imageDOM.querySelector('figure.fl-picture a img[src]');
-                    image.removeAttribute('title');
-                    image.text = '';
-                    imgSrc.classList.remove('fl-disable-interaction');
-                    image.insertAdjacentElement('afterBegin',imgSrc);
+                    if( response.finalUrl === imageLink ) {
+                        const imageDOM = new DOMParser().parseFromString(response.responseText, 'text/html');
+                        let imgSrc = imageDOM.querySelector('figure.fl-picture a img[src]');
+                        image.removeAttribute('title');
+                        image.text = '';
+                        imgSrc.classList.remove('fl-disable-interaction');
+                        image.insertAdjacentElement('afterBegin', imgSrc);
+                    }
                 }
             });
         }
