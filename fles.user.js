@@ -275,8 +275,8 @@ function addFlesSettings(){
         '23.995-24.514L296 325.282l138.735 84.111c11.506 6.976 26.499 3.13 33.227-8.523l19.48-33.741c6.728-11.653 ' +
         '2.563-26.559-9.232-33.036z"/></svg>';
 
-    let notifyBar;
-    if( (notifyBar = document.querySelector('body nav div.self-end ul.list li a[href="/search"]')) !== null )
+    let notifyBar = document.querySelector('body nav div.self-end ul.list li a[href="/search"]');
+    if( notifyBar !== null )
     {
         // /inbox and /conversations/.* are using a new responsive design for the navbar... compensating
         notifyBar = notifyBar.parentElement;
