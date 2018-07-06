@@ -18,43 +18,9 @@
 // ==OpenUserJS==
 // @author unnaturaldeveloper
 // ==/OpenUserJS==
-function returnPageType( pageLocation ) {
-    const groupsRE = RegExp('^https://fetlife.com/groups$');
-    const groupSubRE = RegExp('^https://fetlife.com/groups/[0-9]*.*$');
-    const groupPostRE = RegExp('^https://fetlife.com/groups/[0-9]*/group_posts/[0-9]*')
-    const profileRE = RegExp('^https://fetlife.com/users/[0-9]*$');
-    const convNewRE = RegExp('^https://fetlife.com/conversations/new.*$');
-    const inboxRE = RegExp('^https://fetlife.com/inbox.*$');
-    const settingsRespRE = RegExp('^https://fetlife.com/settings/responsive/.*$');
-    if( groupPostRE.test( pageLocation ) )
-    {
-        return 'groupPost';
-    }
-    else if( groupSubRE.test( pageLocation ) )
-    {
-        return 'groupPage';
-    }
-    else if( groupsRE.test( pageLocation ) )
-    {
-        return 'groupsPage';
-    }
-    else if( profileRE.test( pageLocation ) )
-    {
-        return 'profile';
-    }
-    else if( convNewRE.test( pageLocation ) )
-    {
-        return 'conversation-new';
-    }
-    else if( inboxRE.test( pageLocation ) )
-    {
-        return 'inbox';
-    }
-    else if( settingsRespRE.test( pageLocation ) )
-    {
-        return 'settingsResp';
-    }
-}
+
+"use strict";
+
 function adjustGroup() {
     // Replace 'ago' with actual timestamp
     if( GM_getValue('timestamp_groups') ) {
