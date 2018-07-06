@@ -457,26 +457,36 @@ function switchSetting() {
 addFlesSettings();
 GM_addStyle('a.fles-link { cursor: pointer; } ');
 
-switch(returnPageType(document.location)) {
-    case 'groupsPage':
-        adjustGroup();
-        break;
-    case 'groupPage':
-        adjustSubGroup();
-        break;
-    case 'groupPost':
+// Page handling
+const groupsRE = new RegExp("^https://fetlife.com/groups$");
+const groupSubRE = new RegExp("^https://fetlife.com/groups/[0-9]*.*$");
+const groupPostRE = new RegExp("^https://fetlife.com/groups/[0-9]*/group_posts/[0-9]*");
+const profileRE = new RegExp("^https://fetlife.com/users/[0-9]*$");
+const convNewRE = new RegExp("^https://fetlife.com/conversations/new.*$");
+const inboxRE = new RegExp("^https://fetlife.com/inbox.*$");
+const settingsRespRE = new RegExp("^https://fetlife.com/settings/responsive/.*$");
+const pageLocation = document.location.href;
+
+switch(pageLocation) {
+    case (pageLocation.match(groupPostRE) || {}).input:
         adjustGroupPost();
         break;
-    case 'profile':
+    case (pageLocation.match(groupSubRE) || {}).input:
+        adjustSubGroup();
+        break;
+    case (pageLocation.match(groupsRE) || {}).input:
+        adjustGroup();
+        break;
+    case (pageLocation.match(profileRE) || {}).input:
         adjustProfile();
         break;
-    case 'conversation-new':
+    case (pageLocation.match(convNewRE) || {}).input:
         adjustNewConv();
         break;
-    case 'inbox':
+    case (pageLocation.match(inboxRE) || {}).input:
         adjustInbox();
         break;
-    case 'settingsResp':
+    case (pageLocation.match(settingsRespRE) || {}).input:
         adjustSettingsResp();
         break;
 }
