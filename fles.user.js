@@ -205,6 +205,7 @@ function toggleInlineImage(position) {
     });
 }
 function adjustProfile() {
+    // Enable redirection of click on avatar to full image in gallery
     if( GM_getValue('redirect_avatar_to_gallery')) {
         const imgLink = document.querySelector('img.pan').src.split(/^https:\/\/pic[0-9].fetlife.com\/[0-9]+\/[0-9]+\/([\w-]+)_[0-9]+.jpg/)[1];
         GM_xmlhttpRequest({
