@@ -152,11 +152,12 @@ function multyReplyInsert(Event) {
     commentBox.focus();
 
     let textToQuote = GM_getValue('text-to-quote');
-    if( textToQuote !== '')
     if( commentBox.val() !== '' )
     {
         commentBox.val(commentBox.val() + '\n');
     }
+
+    if( textToQuote !== '')
     {
         textToQuote = textToQuote.replace(/^(\S.*)/gm,'> $1');
         commentBox.val(commentBox.val() + textToQuote + ' -');
