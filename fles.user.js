@@ -231,6 +231,16 @@ function adjustProfile() {
             }
         });
     }
+
+    // Enable links to friends/followers/following from profile page
+    if( GM_getValue('clickable_friend_categories')) {
+        const friendCats = document.querySelectorAll('div#profile ul.friends');
+        friendCats[0].previousElementSibling.outerHTML = '<a href="' + document.location.href + '/friends">' + friendCats[0].previousElementSibling.outerHTML + '</a>';
+        friendCats[1].previousElementSibling.outerHTML = '<a href="' + document.location.href + '/followers">' + friendCats[1].previousElementSibling.outerHTML + '</a>';
+        friendCats[2].previousElementSibling.outerHTML = '<a href="' + document.location.href + '/following">' + friendCats[2].previousElementSibling.outerHTML + '</a>';
+    }
+
+
 }
 function adjustNewConv() {
     // Enable automatic message box cursor placement for new messages
@@ -408,7 +418,9 @@ function switchSetting() {
         case 'fles-toc-profiles': {
             let profileNode = document.createElement('span');
             profileNode.insertAdjacentHTML('afterBegin','<p>The settings below are designed to improve an aspect of profile pages.</p>');
-            profileNode.insertAdjacentHTML('beforeEnd', '<table id="fles-settings"><tbody><tr id="profile_changes"><th class="section_header">Profile Page Modifications</th><th class="section_header">Enabled?</th></tr><tr><td><label for="redirect_avatar_to_gallery">Redirect click on avatar to full image in gallery</label></td><td class="option"><input type="checkbox" id="redirect_avatar_to_gallery" name="redirect_avatar_to_gallery"/></td></tr></tbody></table>');
+            profileNode.insertAdjacentHTML('beforeEnd', '<table id="fles-settings"><tbody><tr id="profile_changes"><th class="section_header">Profile Page Modifications</th><th class="section_header">Enabled?</th></tr><tr><td><label for="redirect_avatar_to_gallery">Redirect click on avatar to full image in gallery</label></td><td class="option"><input type="checkbox" id="redirect_avatar_to_gallery" name="redirect_avatar_to_gallery"/></td></tr>' +
+                '<tr><td><label for="clickable_friend_categories">Enable clickable links for friends/followers/following categories</label></td><td class="option"><input type="checkbox" id="clickable_friend_categories" name="clickable_friend_categories"/></td></tr>' +
+                '</tbody></table>');
             if( flesBody.firstElementChild ) {
                 flesBody.replaceChild(profileNode, flesBody.firstElementChild);
             }
