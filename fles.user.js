@@ -236,9 +236,23 @@ function adjustProfile() {
     // Enable links to friends/followers/following from profile page
     if( GM_getValue('clickable_friend_categories')) {
         const friendCats = document.querySelectorAll('div#profile ul.friends');
-        friendCats[0].previousElementSibling.outerHTML = '<a href="' + document.location.href + '/friends">' + friendCats[0].previousElementSibling.outerHTML + '</a>';
-        friendCats[1].previousElementSibling.outerHTML = '<a href="' + document.location.href + '/followers">' + friendCats[1].previousElementSibling.outerHTML + '</a>';
-        friendCats[2].previousElementSibling.outerHTML = '<a href="' + document.location.href + '/following">' + friendCats[2].previousElementSibling.outerHTML + '</a>';
+        friendCats.forEach(function(category){
+            let elementText = category.previousElementSibling.textContent;
+            let newRef = '';
+            if( elementText.match('^Friends')) {
+                newRef = document.location.href + '/friends';
+            }
+            else if( elementText.match('^Followers')) {
+                newRef = document.location.href + '/followers';
+            }
+            else if( elementText.match('^Following')) {
+                newRef = document.location.href + '/following';
+            }
+            else if( elementText.match('^Mutual Friends')) {
+                newRef = document.location.href + '/friends/mutual';
+            }
+            category.previousElementSibling.outerHTML = '<a href="' + newRef + '">' + category.previousElementSibling.outerHTML + '</a>';
+        });
     }
 
 
