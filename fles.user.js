@@ -151,9 +151,12 @@ function multyReplyInsert(Event) {
     let commentBox = $('div#new_group_post_comment_container div#new_comment form fieldset p textarea');
     commentBox.focus();
 
-    let commentBoxText = commentBox.val();
     let textToQuote = GM_getValue('text-to-quote');
     if( textToQuote !== '')
+    if( commentBox.val() !== '' )
+    {
+        commentBox.val(commentBox.val() + '\n');
+    }
     {
         textToQuote = textToQuote.replace(/^(\S.*)/gm,'> $1');
         commentBox.val(commentBox.val() + textToQuote + ' -');
