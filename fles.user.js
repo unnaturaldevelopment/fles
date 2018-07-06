@@ -19,7 +19,7 @@
 // @author unnaturaldeveloper
 // ==/OpenUserJS==
 
-"use strict";
+'use strict';
 
 function adjustGroup() {
     // Replace 'ago' with actual timestamp
@@ -459,13 +459,13 @@ addFlesSettings();
 GM_addStyle('a.fles-link { cursor: pointer; } ');
 
 // Page handling
-const groupsRE = new RegExp("^https://fetlife.com/groups$");
-const groupSubRE = new RegExp("^https://fetlife.com/groups/[0-9]*.*$");
-const groupPostRE = new RegExp("^https://fetlife.com/groups/[0-9]*/group_posts/[0-9]*");
-const profileRE = new RegExp("^https://fetlife.com/users/[0-9]*$");
-const convNewRE = new RegExp("^https://fetlife.com/conversations/new.*$");
-const inboxRE = new RegExp("^https://fetlife.com/inbox.*$");
-const settingsRespRE = new RegExp("^https://fetlife.com/settings/responsive/.*$");
+const groupsRE = new RegExp('^https://fetlife.com/groups$');
+const groupSubRE = new RegExp('^https://fetlife.com/groups/[0-9]*.*$');
+const groupPostRE = new RegExp('^https://fetlife.com/groups/[0-9]*/group_posts/[0-9]*');
+const profileRE = new RegExp('^https://fetlife.com/users/[0-9]*$');
+const convNewRE = new RegExp('^https://fetlife.com/conversations/new.*$');
+const inboxRE = new RegExp('^https://fetlife.com/inbox.*$');
+const settingsRespRE = new RegExp('^https://fetlife.com/settings/responsive/.*$');
 const pageLocation = document.location.href;
 
 switch(pageLocation) {
