@@ -210,14 +210,14 @@ function adjustProfile() {
         const imgLink = document.querySelector('img.pan').src.split(/^https:\/\/pic[0-9].fetlife.com\/[0-9]+\/[0-9]+\/([\w-]+)_[0-9]+.jpg/)[1];
         GM_xmlhttpRequest({
             method: 'GET',
-            url: document.location + '/pictures',
+            url: window.location.href + '/pictures',
             onload: function handleResponse(response) {
                 const profileGallery = new DOMParser().parseFromString(response.responseText, 'text/html');
                 const galleryPages = profileGallery.getElementById('pictures').getAttribute('data-total-pages');
                 for (let j = 1; j <= galleryPages; j++) {
                     GM_xmlhttpRequest({
                         method: 'GET',
-                        url: document.location + '/pictures?p=false&page=' + j,
+                        url: window.location.href + '/pictures?p=false&page=' + j,
                         onload: function findImage(response) {
                             const imageList = new DOMParser().parseFromString(response.responseText, 'text/html');
                             const galleryImages = imageList.querySelector('#pictures').querySelectorAll('ul')[0].children;
@@ -493,7 +493,7 @@ const profileRE = new RegExp('^https://fetlife.com/users/[0-9]*$');
 const convNewRE = new RegExp('^https://fetlife.com/conversations/new.*$');
 const inboxRE = new RegExp('^https://fetlife.com/inbox.*$');
 const settingsRespRE = new RegExp('^https://fetlife.com/settings/responsive/.*$');
-const pageLocation = document.location.href;
+const pageLocation = window.location.href;
 
 switch(pageLocation) {
     case (pageLocation.match(groupPostRE) || {}).input:
