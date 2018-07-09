@@ -238,18 +238,18 @@ function adjustProfile() {
         const friendCats = document.querySelectorAll('div#profile ul.friends');
         friendCats.forEach(function(category){
             let elementText = category.previousElementSibling.textContent;
-            let newRef = '';
+            let newRef = window.location.href;
             if( elementText.match('^Friends')) {
-                newRef = document.location.href + '/friends';
+                newRef = newRef + '/friends';
             }
             else if( elementText.match('^Followers')) {
-                newRef = document.location.href + '/followers';
+                newRef = newRef + '/followers';
             }
             else if( elementText.match('^Following')) {
-                newRef = document.location.href + '/following';
+                newRef = newRef + '/following';
             }
             else if( elementText.match('^Mutual Friends')) {
-                newRef = document.location.href + '/friends/mutual';
+                newRef = newRef + '/friends/mutual';
             }
             category.previousElementSibling.outerHTML = '<a href="' + newRef + '">' + category.previousElementSibling.outerHTML + '</a>';
         });
