@@ -157,7 +157,7 @@ function multyReplyInsert(Event) {
         commentBox.val(commentBox.val() + '\n');
     }
 
-    if( textToQuote !== '')
+    if(typeof textToQuote != 'undefined')
     {
         textToQuote = textToQuote.replace(/^(\S.*)/gm,'> $1');
         commentBox.val(commentBox.val() + textToQuote + ' -');
