@@ -255,7 +255,56 @@ function adjustProfile() {
         });
     }
 
-
+    // Identify common kinks, and highlight
+    if( GM_getValue('common_kink_highlight')) {
+        let myFetId = unsafeWindow.FL.user.id;
+        let currentProfileId = window.location.href.split(/users\/([0-9]+)/)[1];
+        let kinkList = {};
+        let DOMsection = document.querySelectorAll('div.content_container div#profile div.container div.border div h3.bottom');
+        DOMsection.forEach(function (header) {
+            if (header.innerText.match(/^Fetishes/)) {
+                let iteratorHack = header.nextElementSibling;
+                while (iteratorHack) {
+                    if (iteratorHack.outerHTML == '<br>') {
+                        break;
+                    }
+                    else {
+                        let listCategoryElement = iteratorHack.querySelector('p span > em');
+                        let listCategory = listCategoryElement.innerText.slice(0, -1);
+                        let listItemElements = listCategoryElement.parentElement.parentElement.querySelectorAll('a');
+                        if (myFetId == currentProfileId) {
+                            let myKinks = [];
+                            listItemElements.forEach(function (itemElement) {
+                                myKinks.push(itemElement.innerText);
+                            });
+                            kinkList[listCategory] = myKinks;
+                        }
+                        else {
+                            let myKinks = JSON.parse(GM_getValue('myKinkList'));
+                            listItemElements.forEach(function (itemElement) {
+                                if (myKinks[listCategory].includes(itemElement.innerText)) {
+                                    itemElement.innerHTML = '<span class="fles-kink">' + itemElement.innerHTML + '</span>';
+                                }
+                            });
+                            if (listCategory.match(/limit/)) {
+                                let limits = listCategoryElement.parentElement.parentElement.innerText.split(/:([\w\W]+)/)[1].split(',');
+                                limits.forEach(function (limit) {
+                                    if (listCategory in myKinks && myKinks[listCategory].includes(limit.trim())) {
+                                        listCategoryElement.parentElement.parentElement.innerHTML =
+                                            listCategoryElement.parentElement.parentElement.innerHTML.replace(limit.trim(), '<span class="fles-kink">' + limit.trim() + '</span>');
+                                    }
+                                });
+                            }
+                        }
+                    }
+                    iteratorHack = iteratorHack.nextElementSibling;
+                }
+                if (myFetId == currentProfileId) {
+                    GM_setValue('myKinkList', JSON.stringify(kinkList));
+                }
+            }
+        });
+    }
 }
 function adjustNewConv() {
     // Enable automatic message box cursor placement for new messages
@@ -435,6 +484,7 @@ function switchSetting() {
             profileNode.insertAdjacentHTML('afterBegin','<p>The settings below are designed to improve an aspect of profile pages.</p>');
             profileNode.insertAdjacentHTML('beforeEnd', '<table id="fles-settings"><tbody><tr id="profile_changes"><th class="section_header">Profile Page Modifications</th><th class="section_header">Enabled?</th></tr><tr><td><label for="redirect_avatar_to_gallery">Redirect click on avatar to full image in gallery</label></td><td class="option"><input type="checkbox" id="redirect_avatar_to_gallery" name="redirect_avatar_to_gallery"/></td></tr>' +
                 '<tr><td><label for="clickable_friend_categories">Enable clickable links for friends/followers/following categories</label></td><td class="option"><input type="checkbox" id="clickable_friend_categories" name="clickable_friend_categories"/></td></tr>' +
+                '<tr><td><label for="common_kink_highlight">Highlight common kinks</label></td><td class="option"><input type="checkbox" id="common_kink_highlight" name="common_kink_highlight"/></td></tr>' +
                 '</tbody></table>');
             if( flesBody.firstElementChild ) {
                 flesBody.replaceChild(profileNode, flesBody.firstElementChild);
@@ -483,7 +533,7 @@ function switchSetting() {
 
 // Add FLES Settings to all pages
 addFlesSettings();
-GM_addStyle('a.fles-link { cursor: pointer; } ');
+GM_addStyle('a.fles-link { cursor: pointer; } span.fles-kink { color: #CC0000; font-weight: 800; }');
 
 // Page handling
 const groupsRE = new RegExp('^https://fetlife.com/groups$');
