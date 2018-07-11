@@ -148,24 +148,22 @@ function multyReplyInsert(Event) {
     {
         pName = Event.target.getAttribute('data-comment-author-nickname');
     }
+
     let commentBox = $('div#new_group_post_comment_container div#new_comment form fieldset p textarea');
     commentBox.focus();
 
+    let existingComment = commentBox.val();
     let textToQuote = GM_getValue('text-to-quote');
-    if( commentBox.val() !== '' )
-    {
-        commentBox.val(commentBox.val() + '\n');
-    }
 
-    if(typeof textToQuote != 'undefined')
+    if(typeof textToQuote == 'undefined' || textToQuote === '')
     {
-        textToQuote = textToQuote.replace(/^(\S.*)/gm,'> $1');
-        commentBox.val(commentBox.val() + textToQuote + ' -');
-        GM_setValue('text-to-quote','');
-        commentBox.val(commentBox.val() + ' @' + pName + '\n\n');
+        commentBox.val(existingComment + '@' + pName + ' ');
     }
     else {
-        commentBox.val(commentBox.val() + '@' + pName + ' ');
+        textToQuote = textToQuote.replace(/^(\S.*)/gm,'> $1');
+        commentBox.val(existingComment + textToQuote + ' -');
+        commentBox.val(commentBox.val() + ' @' + pName + '\n');
+        GM_setValue('text-to-quote','');
     }
 }
 function toggleInlineImage(position) {
