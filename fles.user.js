@@ -303,6 +303,109 @@ function adjustProfile() {
             }
         });
     }
+
+    // Mutual followers should be friends
+    if( GM_getValue('show_mutual_followers')) {
+        let myFetId = unsafeWindow.FL.user.id;
+        let currentProfileId = window.location.href.split(/users\/([0-9]+)/)[1];
+        let cacheTime = GM_getValue('mutual_follower_cache_time', false);
+        if (myFetId == currentProfileId) {
+            if (cacheTime == false || cacheTime >= (cacheTime + 3600000)) {
+                GM_setValue('mutual_follower_cache_time', Date.now().toLocaleString());
+                GM_xmlhttpRequest({
+                    method: 'GET',
+                    url: window.location.href + '/followers',
+                    onload: function (response) {
+                        cacheList(response);
+                    }
+                });
+                GM_xmlhttpRequest({
+                    method: 'GET',
+                    url: window.location.href + '/following',
+                    onload: function (response) {
+                        cacheList(response);
+                    }
+                });
+            }
+            let followers = GM_getValue('followers');
+            let following = GM_getValue('following');
+            if (followers && following) {
+                const lastElement = document.querySelector('div.span-5 p.more');
+                lastElement.insertAdjacentHTML('beforeBegin', '<br><h4>Mutual Followers</h4><ul id="fles-mutual-followers" class="friends clearfix"></ul>');
+                const mutualFollowerElement = document.querySelector('ul#fles-mutual-followers');
+                followers = JSON.parse(followers);
+                following = JSON.parse(following);
+
+                Object.keys(followers).forEach(function (key) {
+                    if (key in following) {
+                        mutualFollowerElement.insertAdjacentHTML('afterBegin',
+                            '<a href="https://fetlife.com/' + key + '">' +
+                            '<li>' +
+                            '<img ' +
+                            'alt="' + key + '" ' +
+                            'title="' + key + '" ' +
+                            'width="32" height="32" class="avatar profile_avatar" src="' + following[key] + '"></li>');
+                    }
+                });
+            }
+        }
+    }
+}
+function cacheList(response)
+{
+    const baseUrl = response.finalUrl;
+    const pageDOM = new DOMParser().parseFromString(response.responseText, 'text/html');
+    let nextPageElement = pageDOM.querySelector('div#maincontent div.container div.mtl a.next_page');
+    let totalCountElement = pageDOM.querySelector('div.fl-nav__main ul.dib li.in_section a');
+    let totalCount = totalCountElement.innerText.split(/(?:\w* \()(\d+)(?:\))/)[1];
+    let totalPages = 1;
+    let list = {
+        memberList: {},
+        listCount: 0,
+        addMember: function(key, value) {
+            this.memberList[key] = value;
+            this.listCount += 1;
+        },
+        saveList: function(key) {
+            GM_setValue(key.split('/')[5],JSON.stringify(this.memberList));
+        },
+        isComplete: function(total) {
+            if( total == this.listCount ){
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+    };
+
+    if( nextPageElement !== null ) {
+        totalPages = nextPageElement.previousElementSibling.innerHTML;
+    }
+
+    while( totalPages >= 1 )
+    {
+        let loopUrl = baseUrl + '?page=' + totalPages;
+        GM_xmlhttpRequest({
+            method: 'GET',
+            url: loopUrl,
+            onload: function (response) {
+                if (response.status == 200) {
+                    const pageDOM = new DOMParser().parseFromString(response.responseText, 'text/html');
+                    let memberImages = pageDOM.querySelectorAll('div.fl-member-card img.fl-avatar__img');
+                    memberImages.forEach(function (memberImage) {
+                        let memberName = memberImage.getAttribute('title');
+                        let imageSrc = memberImage.src;
+                        list.addMember(memberName,imageSrc);
+                        if( list.isComplete(totalCount) === true ){
+                            list.saveList(baseUrl);
+                        }
+                    });
+                }
+            }
+        });
+        totalPages -= 1;
+    }
 }
 function adjustNewConv() {
     // Enable automatic message box cursor placement for new messages
@@ -487,6 +590,7 @@ function switchSetting() {
                 '<tr><td><label for="redirect_avatar_to_gallery">Redirect click on avatar to full image in gallery</label></td><td class="option"><input type="checkbox" id="redirect_avatar_to_gallery" name="redirect_avatar_to_gallery"/></td></tr>' +
                 '<tr><td><label for="clickable_friend_categories">Enable clickable links for friends/followers/following categories</label></td><td class="option"><input type="checkbox" id="clickable_friend_categories" name="clickable_friend_categories"/></td></tr>' +
                 '<tr><td><label for="common_kink_highlight">Highlight common kinks</label></td><td class="option"><input type="checkbox" id="common_kink_highlight" name="common_kink_highlight"/></td></tr>' +
+                '<tr><td><label for="show_mutual_followers">Show Mutual Followers</label></td><td class="option"><input type="checkbox" id="show_mutual_followers" name="show_mutual_followers"/></td></tr>' +
                 '</tbody></table>');
             if( flesBody.firstElementChild ) {
                 flesBody.replaceChild(profileNode, flesBody.firstElementChild);
