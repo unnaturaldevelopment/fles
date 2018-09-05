@@ -653,9 +653,21 @@ function switchSetting() {
     }
 }
 
+function addGlobalFeatures() {
+    // Enable floating navbar
+    if( GM_getValue('global-float_navbar') )
+    {
+        let navbar = document.querySelector('nav.fl-nav');
+        navbar.setAttribute('style','position:sticky;position: -webkit-sticky;top: 0;left: 0;right:0');
+    }
+}
+
 // Add FLES Settings to all pages
 addFlesSettings();
 GM_addStyle('a.fles-link { cursor: pointer; } span.fles-kink { color: #CC0000; font-weight: 800; }');
+
+// Add Global Features
+addGlobalFeatures();
 
 // Page handling
 const groupsRE = new RegExp('^https://fetlife.com/groups$');
