@@ -148,11 +148,16 @@ function multyReplyInsert(Event) {
     {
         pName = Event.target.getAttribute('data-comment-author-nickname');
     }
+    else if(Event.target.text === 'Mention') {
+        pName = Event.target.ownerDocument.querySelector('figcaption span cite a').innerHTML;
+    }
 
-    let commentBox = $('div#new_group_post_comment_container div#new_comment form fieldset p textarea');
+    let commentBox = $('form fieldset p textarea');
     commentBox.focus();
 
     let existingComment = commentBox.val();
+    if( Event.target.text === 'Mention' ) existingComment = '';
+
     let textToQuote = GM_getValue('text-to-quote');
 
     if(typeof textToQuote == 'undefined' || textToQuote === '')
@@ -201,6 +206,14 @@ function toggleInlineImage(position) {
             });
         }
     });
+}
+function adjustPicture() {
+    // Enable reply to image owner
+    if( GM_getValue('reply_to_image_owner') ) {
+        const leaveCommentElement = document.querySelector('section#comments header h1');
+        leaveCommentElement.insertAdjacentHTML('beforeEnd','<span class="fl-text-separator--dot">&nbsp;<a class="quiet fles-link">Mention</a></span>');
+        $('section#comments header h1 span a.fles-link').click(multyReplyInsert);
+    }
 }
 function adjustProfile() {
     // Enable redirection of click on avatar to full image in gallery
@@ -592,6 +605,7 @@ function switchSetting() {
                 '<tr><td><label for="clickable_friend_categories">Enable clickable links for friends/followers/following categories</label></td><td class="option"><input type="checkbox" id="clickable_friend_categories" name="clickable_friend_categories"/></td></tr>' +
                 '<tr><td><label for="common_kink_highlight">Highlight common kinks</label></td><td class="option"><input type="checkbox" id="common_kink_highlight" name="common_kink_highlight"/></td></tr>' +
                 '<tr><td><label for="show_mutual_followers">Show Mutual Followers</label></td><td class="option"><input type="checkbox" id="show_mutual_followers" name="show_mutual_followers"/></td></tr>' +
+                '<tr><td><label for="reply_to_image_owner">Mention image owner in reply</label></td><td class="option"><input type="checkbox" id="reply_to_image_owner" name="reply_to_image_owner"/></td></tr>' +
                 '</tbody></table>');
             if( flesBody.firstElementChild ) {
                 flesBody.replaceChild(profileNode, flesBody.firstElementChild);
@@ -674,6 +688,7 @@ const groupsRE = new RegExp('^https://fetlife.com/groups$');
 const groupSubRE = new RegExp('^https://fetlife.com/groups/[0-9]*.*$');
 const groupPostRE = new RegExp('^https://fetlife.com/groups/[0-9]*/group_posts/[0-9]*');
 const profileRE = new RegExp('^https://fetlife.com/users/[0-9]*$');
+const pictureRE = new RegExp('^https://fetlife.com/users/[0-9]*/pictures/[0-9]*$');
 const convNewRE = new RegExp('^https://fetlife.com/conversations/new.*$');
 const inboxRE = new RegExp('^https://fetlife.com/inbox.*$');
 const settingsRespRE = new RegExp('^https://fetlife.com/settings/responsive/.*$');
@@ -688,6 +703,9 @@ switch(pageLocation) {
         break;
     case (pageLocation.match(groupsRE) || {}).input:
         adjustGroup();
+        break;
+    case (pageLocation.match(pictureRE) || {}).input:
+        adjustPicture();
         break;
     case (pageLocation.match(profileRE) || {}).input:
         adjustProfile();
