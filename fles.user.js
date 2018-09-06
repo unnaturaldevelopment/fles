@@ -271,6 +271,10 @@ function adjustProfile() {
         let myFetId = unsafeWindow.FL.user.id;
         let currentProfileId = window.location.href.split(/users\/([0-9]+)/)[1];
         let kinkList = {};
+        if( GM_getValue('common_kink_highlight-color') )
+        {
+            GM_addStyle('span.fles-kink { color:' + GM_getValue('common_kink_highlight-color') + ';}');
+        }
         let DOMsection = document.querySelectorAll('div.content_container div#profile div.container div.border div h3.bottom');
         DOMsection.forEach(function (header) {
             if (header.innerText.match(/^Fetishes/)) {
@@ -554,14 +558,23 @@ function openFlesSettings() {
 
 function addCheckboxEvent(optionNode)
 {
-    optionNode.querySelectorAll('input').forEach(function(element) {
+    optionNode.querySelectorAll('input[type=checkbox]').forEach(function(element) {
         element.addEventListener('input', processCheckbox);
         if (GM_getValue(element.id)) element.setAttribute('checked', '');
+    });
+
+    optionNode.querySelectorAll('input[type=color]').forEach(function(element) {
+        element.addEventListener('change', processColor);
+        if (GM_getValue(element.id)) element.setAttribute('value', GM_getValue(element.id));
     });
 }
 
 function processCheckbox(event) {
     GM_setValue(event.target.id, event.target.checked);
+}
+
+function processColor(event) {
+    GM_setValue(event.target.id, event.target.value);
 }
 
 function switchSetting() {
@@ -604,6 +617,7 @@ function switchSetting() {
                 '<tr><td><label for="redirect_avatar_to_gallery">Redirect click on avatar to full image in gallery</label></td><td class="option"><input type="checkbox" id="redirect_avatar_to_gallery" name="redirect_avatar_to_gallery"/></td></tr>' +
                 '<tr><td><label for="clickable_friend_categories">Enable clickable links for friends/followers/following categories</label></td><td class="option"><input type="checkbox" id="clickable_friend_categories" name="clickable_friend_categories"/></td></tr>' +
                 '<tr><td><label for="common_kink_highlight">Highlight common kinks</label></td><td class="option"><input type="checkbox" id="common_kink_highlight" name="common_kink_highlight"/></td></tr>' +
+                '<tr><td><label for="common_kink_highlight-color">Highlight color for common kinks</label></td><td class="option"><input type="color" id="common_kink_highlight-color" name="common_kink_highlight-color"/><td></tr>' +
                 '<tr><td><label for="show_mutual_followers">Show Mutual Followers</label></td><td class="option"><input type="checkbox" id="show_mutual_followers" name="show_mutual_followers"/></td></tr>' +
                 '<tr><td><label for="reply_to_image_owner">Mention image owner in reply</label></td><td class="option"><input type="checkbox" id="reply_to_image_owner" name="reply_to_image_owner"/></td></tr>' +
                 '</tbody></table>');
