@@ -559,7 +559,7 @@ function openFlesSettings() {
 function addCheckboxEvent(optionNode)
 {
     optionNode.querySelectorAll('input[type=checkbox]').forEach(function(element) {
-        element.addEventListener('input', processCheckbox);
+        element.addEventListener('change', processCheckbox);
         if (GM_getValue(element.id)) element.setAttribute('checked', '');
     });
 
