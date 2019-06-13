@@ -439,6 +439,18 @@ function adjustProfile() {
             }
         }
     }
+
+    // Move writings link under profile avatar pic
+    if( GM_getValue('add_writings_link')) {
+        let h4List = document.querySelectorAll('div.span-5 h4');
+        h4List.forEach(function(member){
+            if(member.innerHTML.match(/Writing/g)) {
+                const linksDiv = document.querySelector('div#main_content div.span-6 div.center.smaller');
+                linksDiv.classList.remove('center');
+                linksDiv.insertAdjacentHTML('afterEnd','<div class="smaller"><a href="'+ window.location.href + '/posts">view writings</a></div>');
+            }
+        });
+    }
 }
 function cacheList(response)
 {
@@ -693,6 +705,7 @@ function switchSetting() {
                 '<tr><td><label for="show_mutual_followers">Show Mutual Followers</label></td><td class="option"><input type="checkbox" id="show_mutual_followers" name="show_mutual_followers"/></td></tr>' +
                 '<tr><td><label for="reply_to_image_owner">Mention image owner in comment</label></td><td class="option"><input type="checkbox" id="reply_to_image_owner" name="reply_to_image_owner"/></td></tr>' +
                 '<tr><td><label for="collapse_user_posts">Collapse List of User\'s Writings</label></td><td class="option"><input type="checkbox" id="collapse_user_posts" name="collapse_user_posts"/></td></tr>' +
+                '<tr><td><label for="add_writings_link">Add writings link under avatar</label></td><td class="option"><input type="checkbox" id="add_writings_link" name="add_writings_link"/></td></tr>' +
                 '</tbody></table>');
             if( flesBody.firstElementChild ) {
                 flesBody.replaceChild(profileNode, flesBody.firstElementChild);
