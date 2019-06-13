@@ -573,7 +573,7 @@ function addFlesSettings(){
     GM_addStyle(
         'a#fles-settings { display: block !important; }' +
         'div#fles-menu { box-sizing: content-box !important; position: fixed; ' +
-            'display: none; flex-direction: column; top: 1%; left: 1%; right: 1%; height: 375px; padding: 1%; ' +
+            'display: none; flex-direction: column; top: 1%; left: 1%; right: 1%; height: 75%; padding: 1%; ' +
             'border: solid 2px #CC0000; ' + 'border-radius: 10px; background-color: rgba(0,0,0,0.9); ' +
             'z-index: 100000000; } ');
     notifyBar.querySelector('a#fles-settings').addEventListener('click', openFlesSettings);
