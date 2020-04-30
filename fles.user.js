@@ -100,7 +100,7 @@ function adjustGroupPost() {
             multiReplyElement.firstElementChild.removeAttribute('href');
             multiReplyElement.firstElementChild.removeAttribute('data-comment-reply');
             multiReplyElement.firstElementChild.classList.add('fles-link');
-            multiReplyElement.addEventListener('click', multyReplyInsert);
+            multiReplyElement.addEventListener('click', multiReplyInsert);
             comment.parentElement.insertAdjacentElement('beforeEnd',multiReplyElement);
         });
     }
@@ -121,7 +121,7 @@ function adjustGroupPost() {
     if( GM_getValue('reply-to-op-in-subgroup') ) {
         const originalPostMeta = document.querySelector('div.group_post div.may_contain_youtubes p.quiet.small');
         originalPostMeta.insertAdjacentHTML('beforeEnd','<span class="fl-text-separator--dot">&nbsp;<a class="quiet fles-link">Reply</a></span>');
-        $('div.group_post div.may_contain_youtubes p.quiet.small span a.fles-link').click(multyReplyInsert);
+        $('div.group_post div.may_contain_youtubes p.quiet.small span a.fles-link').click(multiReplyInsert);
     }
 
     // Add ability to quote via copy/paste
@@ -138,7 +138,7 @@ function adjustGroupPost() {
         });
     }
 }
-function multyReplyInsert(Event) {
+function multiReplyInsert(Event) {
     let pName = '';
     if(Event.target.text === 'Reply')
     {
@@ -284,7 +284,7 @@ function adjustPicture() {
     if( GM_getValue('reply_to_image_owner') ) {
         const leaveCommentElement = document.querySelector('section#comments header h1');
         leaveCommentElement.insertAdjacentHTML('beforeEnd','<span class="fl-text-separator--dot">&nbsp;<a class="quiet fles-link">Mention</a></span>');
-        $('section#comments header h1 span a.fles-link').click(multyReplyInsert);
+        $('section#comments header h1 span a.fles-link').click(multiReplyInsert);
     }
 }
 function adjustProfile() {
