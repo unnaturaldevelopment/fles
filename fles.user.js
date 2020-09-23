@@ -457,9 +457,9 @@ function cacheList(response)
 {
     const baseUrl = response.finalUrl;
     const pageDOM = new DOMParser().parseFromString(response.responseText, 'text/html');
-    let nextPageElement = pageDOM.querySelector('div#maincontent div.container div.mtl a.next_page');
-    let totalCountElement = pageDOM.querySelector('div.fl-nav__main ul.dib li.in_section a');
-    let totalCount = totalCountElement.innerText.split(/(?:\w* \()(\d+)(?:\))/)[1];
+    let nextPageElement = pageDOM.querySelector('.next_page');
+    let totalCountElement = pageDOM.querySelector('header form span');
+    let totalCount = totalCountElement.innerText.split(/(?:\d+ - \d+ of )(\d+)/)[1];
     let totalPages = 1;
     let list = {
         memberList: {},
@@ -494,9 +494,9 @@ function cacheList(response)
             onload: function (response) {
                 if (response.status == 200) {
                     const pageDOM = new DOMParser().parseFromString(response.responseText, 'text/html');
-                    let memberImages = pageDOM.querySelectorAll('div.fl-member-card img.fl-avatar__img');
+                    let memberImages = pageDOM.querySelectorAll('main div.w-50-ns.w-100.ph1 img')
                     memberImages.forEach(function (memberImage) {
-                        let memberName = memberImage.getAttribute('title');
+                        let memberName = memberImage.parentElement.parentElement.parentElement.innerText.split(/\s+/)[0];
                         let imageSrc = memberImage.src;
                         list.addMember(memberName,imageSrc);
                         if( list.isComplete(totalCount) === true ){
