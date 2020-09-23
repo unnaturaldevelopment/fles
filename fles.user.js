@@ -359,7 +359,7 @@ function adjustProfile() {
                         let listCategoryElement = iteratorHack.querySelector('p span > em');
                         let listCategory = listCategoryElement.innerText.slice(0, -1);
                         let listItemElements = listCategoryElement.parentElement.parentElement.querySelectorAll('a');
-                        if (myFetId == currentProfileId) {
+                        if (myFetId.toString() == currentProfileId.toString()) {
                             let myKinks = [];
                             listItemElements.forEach(function (itemElement) {
                                 myKinks.push(itemElement.innerText);
@@ -386,7 +386,7 @@ function adjustProfile() {
                     }
                     iteratorHack = iteratorHack.nextElementSibling;
                 }
-                if (myFetId == currentProfileId) {
+                if (myFetId.toString() == currentProfileId.toString()) {
                     GM_setValue('myKinkList', JSON.stringify(kinkList));
                 }
             }
