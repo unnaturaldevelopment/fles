@@ -512,14 +512,7 @@ function cacheList(response)
 function adjustNewConv() {
     // Enable automatic message box cursor placement for new messages
     if( GM_getValue('pm_message_box_cursor_new')) {
-        const messageBox = document.querySelector('form#new_conversation input#subject');
-        messageBox.focus();
-    }
-}
-function adjustExistingConv() {
-    // Enable automatic message box cursor placement for active conversations
-    if( GM_getValue('pm_message_box_cursor_active')) {
-        const messageBox = document.querySelector('div.message_body div.input-group textarea[name=body]');
+        const messageBox = document.querySelector('form input#subject');
         messageBox.focus();
     }
 }
