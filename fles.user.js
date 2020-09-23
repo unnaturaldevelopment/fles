@@ -398,9 +398,10 @@ function adjustProfile() {
         let myFetId = unsafeWindow.FL.user.id;
         let currentProfileId = window.location.href.split(/users\/([0-9]+)/)[1];
         let cacheTime = GM_getValue('mutual_follower_cache_time', false);
-        if (myFetId == currentProfileId) {
-            if (cacheTime == false || cacheTime >= (cacheTime + 3600000)) {
-                GM_setValue('mutual_follower_cache_time', Date.now().toLocaleString());
+        let nowTime = Date.now()
+        if (myFetId.toString() == currentProfileId) {
+            if (cacheTime == false || nowTime >= (cacheTime + 3600000)) {
+                GM_setValue('mutual_follower_cache_time', nowTime)
                 GM_xmlhttpRequest({
                     method: 'GET',
                     url: window.location.href + '/followers',
