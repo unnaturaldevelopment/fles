@@ -734,7 +734,6 @@ function switchSetting() {
             messageNode.insertAdjacentHTML('beforeEnd', '<table id="fles-settings"><tbody>' +
                 '<tr id="pm_options"><th class="section_header">Private Message Options</th><th class="section_header">Enabled?</th></tr>' +
                 '<tr><td><label for="pm_message_box_cursor_new">Enable automatic message box cursor placement for new message</label></td><td class="option"><input type="checkbox" id="pm_message_box_cursor_new" name="pm_message_box_cursor_new"/></td></tr>' +
-                '<tr><td><label for="pm_message_box_cursor_active">Enable automatic message box cursor placement for active conversation</label></td><td class="option"><input type="checkbox" id="pm_message_box_cursor_active" name="pm_message_box_cursor_active"/></td></tr>' +
                 '</tbody></table>');
             if( flesBody.firstElementChild ) {
                 flesBody.replaceChild(messageNode, flesBody.firstElementChild);
