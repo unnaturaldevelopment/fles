@@ -107,13 +107,10 @@ function adjustGroupPost() {
 
     // Enable viewing of image inline
     if( GM_getValue('inline-image-in-subgroup') ) {
-        const sidebarDiv = document.querySelector('a#report_discussion_button').parentElement;
-        const toggleInlineButtonOP = '<br><br><a id="fles-group-enable-inline-image-op" class="fles-link xq xs tdn">View images in original post</a>';
-        sidebarDiv.insertAdjacentHTML('beforeEnd',toggleInlineButtonOP);
-        sidebarDiv.querySelector('a#fles-group-enable-inline-image-op').addEventListener('click',function(){ toggleInlineImage('op'); });
-        const toggleInlineButtonThread = '<br><br><a id="fles-group-enable-inline-image-thread" class="fles-link xq xs tdn">View images in thread</a>';
+        const sidebarDiv = document.querySelector('div.pt15.f6');
+        const toggleInlineButtonThread = '<br><a id="fles-group-enable-inline-image-thread" class="link gray hover-silver">View images in thread</a>';
         sidebarDiv.insertAdjacentHTML('beforeEnd',toggleInlineButtonThread);
-        sidebarDiv.querySelector('a#fles-group-enable-inline-image-thread').addEventListener('click',function(){ toggleInlineImage('thread'); });
+        sidebarDiv.querySelector('a#fles-group-enable-inline-image-thread').addEventListener('click',function(){ toggleInlineImage(); });
 
     }
 
@@ -171,21 +168,9 @@ function multiReplyInsert(Event) {
         GM_setValue('text-to-quote','');
     }
 }
-function toggleInlineImage(position) {
+function toggleInlineImage() {
     const pictureRE = RegExp('^https://fetlife.com/users/[0-9]*/pictures/[0-9]*$');
-    let imageList = '';
-
-    switch(position) {
-        case 'op' : {
-            imageList = document.querySelectorAll('div.may_contain_youtubes a');
-            break;
-        }
-        case 'thread' : {
-            imageList = document.querySelectorAll('div#group_post_comments_container section#comments a');
-            break;
-        }
-    }
-
+    let imageList = document.querySelectorAll('div#comments a.content-link');
     imageList.forEach(function(image){
         let imageLink = image.getAttribute('href');
         if( pictureRE.test(imageLink))
@@ -196,10 +181,7 @@ function toggleInlineImage(position) {
                 onload: function handleResponse(response) {
                     if( response.finalUrl === imageLink ) {
                         const imageDOM = new DOMParser().parseFromString(response.responseText, 'text/html');
-                        let imgSrc = imageDOM.querySelector('figure.fl-picture a img[src]');
-                        image.removeAttribute('title');
-                        image.text = '';
-                        imgSrc.classList.remove('fl-disable-interaction');
+                        let imgSrc = imageDOM.querySelector('main div img.ipp.center[src]')
                         image.insertAdjacentElement('afterBegin', imgSrc);
                     }
                 }
@@ -780,7 +762,7 @@ addGlobalFeatures();
 // Page handling
 const groupsRE = new RegExp('^https://fetlife.com/groups$');
 const groupSubRE = new RegExp('^https://fetlife.com/groups/[0-9]*.*$');
-const groupPostRE = new RegExp('^https://fetlife.com/groups/[0-9]*/group_posts/[0-9]*');
+const groupPostRE = new RegExp('^https://fetlife.com/groups/[0-9]*/posts/[0-9]*');
 const profileRE = new RegExp('^https://fetlife.com/users/[0-9]*$');
 const pictureRE = new RegExp('^https://fetlife.com/users/[0-9]*/pictures/[0-9]*$');
 const postsRE = new RegExp('^https://fetlife.com/users/[0-9]*/posts$');
