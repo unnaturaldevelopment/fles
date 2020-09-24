@@ -290,23 +290,24 @@ function adjustPicture() {
 function adjustProfile() {
     // Enable redirection of click on avatar to full image in gallery
     if( GM_getValue('redirect_avatar_to_gallery')) {
-        const imgLink = document.querySelector('img.pan').src.split(/^https:\/\/pic[0-9].fetlife.com\/[0-9]+\/[0-9]+\/([\w-]+)_[0-9]+.jpg/)[1];
+        const imgLink = document.querySelector('img.pan').src.split(/^https:\/\/pic-\w+-\d.fetlife.com\/[0-9]+\/([0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12})\/\w+\d+.jpg/)[1];
         GM_xmlhttpRequest({
             method: 'GET',
             url: window.location.href + '/pictures',
             onload: function handleResponse(response) {
                 const profileGallery = new DOMParser().parseFromString(response.responseText, 'text/html');
-                const galleryPages = profileGallery.getElementById('pictures').getAttribute('data-total-pages');
+                const galleryImages = profileGallery.querySelector('span.f6.gray').innerText.split(/\((\d+)\)/)[1]
+                const galleryPages = Math.ceil( galleryImages / 30 )
                 for (let j = 1; j <= galleryPages; j++) {
                     GM_xmlhttpRequest({
                         method: 'GET',
-                        url: window.location.href + '/pictures?p=false&page=' + j,
+                        url: window.location.href + '/pictures?page=' + j,
                         onload: function findImage(response) {
                             const imageList = new DOMParser().parseFromString(response.responseText, 'text/html');
-                            const galleryImages = imageList.querySelector('#pictures').querySelectorAll('ul')[0].children;
+                            const galleryImages = imageList.querySelectorAll('main > div.flex-wrap img.object-cover')
                             for (let i = 0; i < galleryImages.length; i++) {
-                                if (galleryImages[i].firstElementChild.firstElementChild.src.split(/^https:\/\/pic[0-9].fetlife.com\/[0-9]+\/[0-9]+\/([\w-]+)_[0-9]+.jpg/)[1] === imgLink) {
-                                    document.querySelector('img.pan').parentElement.href = galleryImages[i].firstElementChild.href;
+                                if (galleryImages[i].src.split(/^https:\/\/pic-\w+-\d.fetlife.com\/[0-9]+\/([0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12})\/\w+\d+.jpg/)[1] === imgLink) {
+                                    document.querySelector('img.pan').parentElement.href = galleryImages[i].parentNode.parentNode.parentNode.href;
                                 }
                             }
                         }
