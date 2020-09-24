@@ -134,6 +134,15 @@ function adjustGroupPost() {
             });
         });
     }
+
+    // Disable embedded picture in post
+    if( GM_getValue('disable-image-embed-in-group') ) {
+        let imageLinkList = document.querySelectorAll("a[title='Open picture']")
+        imageLinkList.forEach(function (image) {
+            image.querySelector('img').replaceWith('Embedded Image disabled by FLES')
+        });
+    }
+
 }
 function multiReplyInsert(Event) {
     let pName = '';
@@ -699,6 +708,7 @@ function switchSetting() {
                 '<tr><td><label for="group_new_discussion">Redirect to new discussions when visiting group</label></td><td class="option"><input type="checkbox" id="group_new_discussion" name="group_new_discussion"/></td></tr>' +
                 '<tr><td><label for="group_link_to_last_comment">Change link for followed discussion to last comment</label></td><td class="option"><input type="checkbox" id="group_link_to_last_comment" name="group_link_to_last_comment"/></td></tr>' +
                 '<tr><td><label for="inline-image-in-subgroup">Enable ability to toggle inline images in group discussion</label></td><td class="option"><input type="checkbox" id="inline-image-in-subgroup" name="inline-image-in-subgroup"/></td></tr>' +
+                '<tr><td><label for="disable-image-embed-in-group">Disable embedded image in original group post</label></td><td class="option"><input type="checkbox" id="disable-image-embed-in-group" name="disable-image-embed-in-group"/></td></tr>' +
                 '<tr><td><label for="multi-reply-in-subgroup">Enable multi-reply in group discussion</label></td><td class="option"><input type="checkbox" id="multi-reply-in-subgroup" name="multi-reply-in-subgroup"/></td></tr>' +
                 '<tr><td><label for="reply-to-op-in-subgroup">Enable ability to reply to the original poster in a group discussion</label></td><td class="option"><input type="checkbox" id="reply-to-op-in-subgroup" name="reply-to-op-in-subgroup"/></td></tr>' +
                 '<tr><td><label for="quote-in-group">Enable ability to quote directly into the message box via copy</label></td><td class="option"><input type="checkbox" id="quote-in-group" name="quote-in-group"/></td></tr>' +
