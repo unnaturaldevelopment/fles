@@ -191,6 +191,7 @@ function toggleInlineImage() {
                     if( response.finalUrl === imageLink ) {
                         const imageDOM = new DOMParser().parseFromString(response.responseText, 'text/html');
                         let imgSrc = imageDOM.querySelector('main div img.ipp.center[src]')
+                        image.textContent = '';
                         image.insertAdjacentElement('afterBegin', imgSrc);
                     }
                 }
