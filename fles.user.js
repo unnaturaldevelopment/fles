@@ -93,15 +93,18 @@ function adjustSubGroup() {
 function adjustGroupPost() {
     // Enable multi-reply
     if( GM_getValue('multi-reply-in-subgroup') ) {
-        const commentList = document.querySelectorAll('section#comments article div.fl-flag__body footer.fl-comment__actions span span.fl-text-separator--dot a[data-comment-author-nickname]');
+        const commentList = document.querySelectorAll('div[data-target="content--comment.main"] div.lh-copy');
         commentList.forEach(function(comment){
-            let multiReplyElement = comment.parentElement.cloneNode(true);
-            multiReplyElement.firstElementChild.innerHTML = 'Multi-Reply';
-            multiReplyElement.firstElementChild.removeAttribute('href');
-            multiReplyElement.firstElementChild.removeAttribute('data-comment-reply');
-            multiReplyElement.firstElementChild.classList.add('fles-link');
+            let replyLink = comment.querySelector('a[data-reply-link]')
+            let linkSpacer = comment.querySelector('div.mh1.mid-gray').cloneNode(true)
+            let multiReplyElement = replyLink.cloneNode(true);
+            multiReplyElement.innerHTML = 'Multi-Reply';
+            multiReplyElement.removeAttribute('href');
+            multiReplyElement.removeAttribute('data-action');
+            multiReplyElement.classList.add('fles-link','link','gray','hover-silver','pointer');
             multiReplyElement.addEventListener('click', multiReplyInsert);
-            comment.parentElement.insertAdjacentElement('beforeEnd',multiReplyElement);
+            comment.insertAdjacentElement('beforeEnd',linkSpacer);
+            comment.insertAdjacentElement('beforeEnd',multiReplyElement);
         });
     }
 
@@ -152,28 +155,28 @@ function multiReplyInsert(Event) {
     }
     else if(Event.target.text === 'Multi-Reply')
     {
-        pName = Event.target.getAttribute('data-comment-author-nickname');
+        pName = Event.target.getAttribute('data-nickname');
     }
     else if(Event.target.text === 'Mention') {
         pName = Event.target.ownerDocument.querySelector('figcaption span cite a').innerHTML;
     }
 
-    let commentBox = $('form fieldset p textarea');
+    let commentBox = document.querySelector('div.input-group > textarea')
     commentBox.focus();
 
-    let existingComment = commentBox.val();
+    let existingComment = commentBox.value;
     if( Event.target.text === 'Mention' ) existingComment = '';
 
     let textToQuote = GM_getValue('text-to-quote');
 
     if(typeof textToQuote == 'undefined' || textToQuote === '')
     {
-        commentBox.val(existingComment + '@' + pName + ' ');
+        commentBox.value = existingComment + '@' + pName + ' ';
     }
     else {
         textToQuote = textToQuote.replace(/^(\S.*)/gm,'> $1');
-        commentBox.val(existingComment + textToQuote + ' -');
-        commentBox.val(commentBox.val() + ' @' + pName + '\n');
+        commentBox.value = existingComment + textToQuote + ' -';
+        commentBox.value = commentBox.value + ' @' + pName + '\n';
         GM_setValue('text-to-quote','');
     }
 }
