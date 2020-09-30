@@ -159,7 +159,7 @@ function multiReplyInsert(Event) {
         pName = Event.target.getAttribute('data-nickname');
     }
     else if(Event.target.text === 'Mention') {
-        pName = Event.target.ownerDocument.querySelector('figcaption span cite a').innerHTML;
+        pName = Event.target.ownerDocument.querySelector('a.link.mr1.mr0-l.f4-ns.f5.secondary.underline-hover.nowrap').innerHTML;
     }
 
     let commentBox = document.querySelector('div.input-group > textarea')
@@ -278,9 +278,10 @@ function sortPostsByTimestamp(articles) {
 function adjustPicture() {
     // Enable reply to image owner
     if( GM_getValue('reply_to_image_owner') ) {
-        const leaveCommentElement = document.querySelector('section#comments header h1');
-        leaveCommentElement.insertAdjacentHTML('beforeEnd','<span class="fl-text-separator--dot">&nbsp;<a class="quiet fles-link">Mention</a></span>');
-        $('section#comments header h1 span a.fles-link').click(multiReplyInsert);
+        const leaveCommentElement = document.querySelector('main div.lh-copy div.v-cloak');
+        const replyLink = '<span class="mh1 mid-gray">·</span><a id="reply-to-op-in-subgroup" class="link gray hover-silver">Mention</a>';
+        leaveCommentElement.insertAdjacentHTML('beforeEnd',replyLink);
+        leaveCommentElement.querySelector('a#reply-to-op-in-subgroup').addEventListener('click', multiReplyInsert);
     }
 }
 function adjustProfile() {
