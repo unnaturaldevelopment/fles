@@ -762,7 +762,7 @@ function addGlobalFeatures() {
     // Enable floating navbar
     if( GM_getValue('global-float_navbar') )
     {
-        let navbar = document.querySelector('nav.fl-nav');
+        let navbar = document.querySelector('body > nav');
         navbar.setAttribute('style','position:sticky;position: -webkit-sticky;top: 0;left: 0;right:0');
     }
 }
