@@ -127,11 +127,11 @@ function adjustGroupPost() {
 
     // Add ability to quote via copy/paste
     if( GM_getValue('quote-in-group') ) {
-        const postBody = document.querySelector('div.group_post div.may_contain_youtubes');
+        const postBody = document.querySelector('div.story__copy.bigger.pt15');
         postBody.addEventListener('copy', function () {
             GM_setValue('text-to-quote', window.getSelection().toString());
         });
-        const comments = document.querySelectorAll('div.fl-comment__text');
+        const comments = document.querySelectorAll('div#comments');
         comments.forEach(function (comment) {
             comment.addEventListener('copy', function () {
                 GM_setValue('text-to-quote', window.getSelection().toString());
@@ -152,7 +152,7 @@ function multiReplyInsert(Event) {
     let pName = '';
     if(Event.target.text === 'Reply')
     {
-        pName = Event.target.parentElement.parentElement.firstElementChild.innerHTML;
+        pName = Event.target.parentNode.parentNode.querySelector('a.link.gray.hover-silver.underline.mr1').innerText;
     }
     else if(Event.target.text === 'Multi-Reply')
     {
