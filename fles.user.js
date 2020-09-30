@@ -203,78 +203,6 @@ function toggleInlineImage() {
         }
     });
 }
-function adjustPosts() {
-    // Collapse user posts
-    if( GM_getValue('collapse_user_posts') ) {
-        let articleArray = [];
-        const writingElement = document.querySelector('section#profile_header div.member-info p span.small:last-child');
-        const postCount = writingElement.querySelector('span').innerHTML.replace(/[()]/g, '');
-        let pages = Math.ceil(postCount / 10);
-        // Single Page
-        let articles = document.querySelectorAll('section.span-19 article');
-        let footer = document.querySelector('section.span-19 footer');
-        articles.forEach(function (article) {
-            articleArray.push(article);
-            // Remove them from visible page
-            article.parentNode.removeChild(article);
-        });
-        footer.parentNode.removeChild(footer);
-        if (pages > 1) {
-            for (let i = 2; i <= pages; i++) {
-                GM_xmlhttpRequest({
-                    method: 'GET',
-                    url: window.location.href + '?page=' + i,
-                    onload: function (response) {
-                        const postPage = new DOMParser().parseFromString(response.responseText, 'text/html');
-                        let articles = postPage.querySelectorAll('section.span-19 article');
-                        articles.forEach(function (article) {
-                            articleArray.push(article);
-                        });
-                        if (articleArray.length == postCount) {
-                            modifyPostsPage(articleArray);
-                        }
-                    }
-                });
-            }
-
-        }
-        else {
-            if (articleArray.length == postCount) {
-                modifyPostsPage(articleArray);
-            }
-        }
-    }
-}
-function modifyPostsPage(articles) {
-    let sortedArticles = sortPostsByTimestamp(articles);
-    let modifiedPage = document.querySelector('section.span-19');
-    sortedArticles.forEach(function(article) {
-        let articleBody = article.querySelector('div.may_contain_youtubes');
-        articleBody.parentNode.removeChild(articleBody);
-        let articleAvatar = article.querySelector('header a.fl');
-        articleAvatar.parentNode.removeChild(articleAvatar);
-        let articleTitle = article.querySelector('h2');
-        articleTitle.setAttribute('style', 'font-size: 85%;');
-        modifiedPage.insertAdjacentElement('beforeEnd',article);
-    });
-}
-function sortPostsByTimestamp(articles) {
-    if(articles.length < 2) {
-        return articles;
-    }
-    let pivot = articles[0];
-    let lesser = [];
-    let greater = [];
-    for(var i = 1; i < articles.length; i++) {
-        if(new Date(articles[i].querySelector('time').getAttribute('datetime')) < new Date(pivot.querySelector('time').getAttribute('datetime')))
-        {
-            lesser.push(articles[i]);
-        } else {
-            greater.push(articles[i]);
-        }
-    }
-    return sortPostsByTimestamp(greater).concat(pivot, sortPostsByTimestamp(lesser));
-}
 function adjustPicture() {
     // Enable reply to image owner
     if( GM_getValue('reply_to_image_owner') ) {
@@ -696,7 +624,6 @@ function switchSetting() {
                 '<tr><td><label for="common_kink_highlight-color">Highlight color for common kinks</label></td><td class="option"><input type="color" id="common_kink_highlight-color" name="common_kink_highlight-color"/><td></tr>' +
                 '<tr><td><label for="show_mutual_followers">Show Mutual Followers</label></td><td class="option"><input type="checkbox" id="show_mutual_followers" name="show_mutual_followers"/></td></tr>' +
                 '<tr><td><label for="reply_to_image_owner">Mention image owner in comment</label></td><td class="option"><input type="checkbox" id="reply_to_image_owner" name="reply_to_image_owner"/></td></tr>' +
-                '<tr><td><label for="collapse_user_posts">Collapse List of User\'s Writings</label></td><td class="option"><input type="checkbox" id="collapse_user_posts" name="collapse_user_posts"/></td></tr>' +
                 '<tr><td><label for="add_writings_link">Add writings link under avatar</label></td><td class="option"><input type="checkbox" id="add_writings_link" name="add_writings_link"/></td></tr>' +
                 '</tbody></table>');
             if( flesBody.firstElementChild ) {
@@ -796,9 +723,6 @@ switch(pageLocation) {
         break;
     case (pageLocation.match(groupsRE) || {}).input:
         adjustGroup();
-        break;
-    case (pageLocation.match(postsRE) || {}).input:
-        adjustPosts();
         break;
     case (pageLocation.match(pictureRE) || {}).input:
         adjustPicture();
