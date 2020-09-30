@@ -108,6 +108,14 @@ function adjustGroupPost() {
         });
     }
 
+    // Add reply to original poster in group discussion
+    if( GM_getValue('reply-to-op-in-subgroup') ) {
+        const linkDiv = document.querySelector('div.pt15.f6');
+        const replyLink = '<br><a id="reply-to-op-in-subgroup" class="link gray hover-silver">Reply</a>';
+        linkDiv.insertAdjacentHTML('beforeEnd',replyLink);
+        linkDiv.querySelector('a#reply-to-op-in-subgroup').addEventListener('click', multiReplyInsert);
+    }
+
     // Enable viewing of image inline
     if( GM_getValue('inline-image-in-subgroup') ) {
         const sidebarDiv = document.querySelector('div.pt15.f6');
@@ -115,13 +123,6 @@ function adjustGroupPost() {
         sidebarDiv.insertAdjacentHTML('beforeEnd',toggleInlineButtonThread);
         sidebarDiv.querySelector('a#fles-group-enable-inline-image-thread').addEventListener('click',function(){ toggleInlineImage(); });
 
-    }
-
-    // Add reply to original poster in group discussion
-    if( GM_getValue('reply-to-op-in-subgroup') ) {
-        const originalPostMeta = document.querySelector('div.group_post div.may_contain_youtubes p.quiet.small');
-        originalPostMeta.insertAdjacentHTML('beforeEnd','<span class="fl-text-separator--dot">&nbsp;<a class="quiet fles-link">Reply</a></span>');
-        $('div.group_post div.may_contain_youtubes p.quiet.small span a.fles-link').click(multiReplyInsert);
     }
 
     // Add ability to quote via copy/paste
