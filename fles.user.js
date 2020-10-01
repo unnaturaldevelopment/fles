@@ -40,10 +40,9 @@ function adjustGroup() {
     }
     // Add link to latest comment in group
     if( GM_getValue('group_link_to_last_comment') ) {
-        const discussionsFollowingList = document.querySelectorAll('ul.discussions_following li');
+        const discussionsFollowingList = document.querySelectorAll('ul.discussions_following.clearfix > li > a');
         discussionsFollowingList.forEach(function (discussion) {
-            let discussionElement = discussion.firstElementChild;
-            let discussionLink = 'https://fetlife.com' + discussionElement.getAttribute('href');
+            let discussionLink = 'https://fetlife.com' + discussion.getAttribute('href');
             GM_xmlhttpRequest({
                 method: 'GET',
                 url: discussionLink,
@@ -60,16 +59,15 @@ function adjustGroup() {
                         url: pageRef,
                         onload: function handleResponse(response) {
                             const pageDOM = new DOMParser().parseFromString(response.responseText, 'text/html');
-                            let comments = pageDOM.querySelectorAll('section#comments article');
-                            if( comments.length !== 0 ) {
-                                let last_comment_id = comments[comments.length - 1].getAttribute('id');
-                                if( pagination !== null) {
-                                    pageRef = pageRef.replace(/#\w*/gm, '#' + last_comment_id + '_anchor');
+                            let comments = pageDOM.querySelectorAll('div[data-comment-deletable]');
+                            if (comments.length !== 0) {
+                                let last_comment_id = comments[comments.length - 1].firstChild.getAttribute('data-comment-id');
+                                if (pagination !== null) {
+                                    pageRef = pageRef.replace(/#\w*/gm, '&comment_id=' + last_comment_id);
+                                } else {
+                                    pageRef = pageRef + '?comment_id=' + last_comment_id;
                                 }
-                                else {
-                                    pageRef = pageRef + '#' + last_comment_id + '_anchor';
-                                }
-                                discussionElement.setAttribute('href', pageRef);
+                                discussion.setAttribute('href', pageRef);
                             }
                         }
                     });
