@@ -450,11 +450,6 @@ function adjustInbox() {
         addFlesSettings();
     });
 }
-function adjustSettingsResp() {
-    document.addEventListener('turbolinks:load',function() {
-        addFlesSettings();
-    });
-}
 
 function addFlesSettings(){
     // asterisk icon courtesy of https://fontawesome.com
@@ -709,7 +704,6 @@ const pictureRE = new RegExp('^https://fetlife.com/users/[0-9]*/pictures/[0-9]*$
 const postsRE = new RegExp('^https://fetlife.com/users/[0-9]*/posts$');
 const convNewRE = new RegExp('^https://fetlife.com/conversations/new.*$');
 const inboxRE = new RegExp('^https://fetlife.com/inbox.*$');
-const settingsRespRE = new RegExp('^https://fetlife.com/settings/responsive/.*$');
 const pageLocation = window.location.href;
 
 switch(pageLocation) {
