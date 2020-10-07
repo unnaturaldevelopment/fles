@@ -518,13 +518,13 @@ function addFlesSettings(){
     flesContent.insertAdjacentHTML('beforeEnd','<div id="fles-body"><p>Thanks for choosing FLES!</p></div>');
 }
 
-function openFlesSettings() {
+async function openFlesSettings() {
     // Set up normalization style sheet
     const htmlHead = document.querySelector('html head');
     htmlHead.insertAdjacentHTML('beforeEnd','<style id="fles-menu-normalize">' + GM_getResourceText('normalize4ab3de5') + '</style>');
 
     // Set up FLES style sheet
-    GM_addStyle(
+    await GM_addStyle(
         'div#fles-header { display: inherit; margin: 1%; flex: 0 0 70px; } ' +
         'div#fles-content { display: inherit; flex: 0 0 230px; } ' +
         'div#fles-footer { display: inherit; flex: 0 0 50px; justify-content: flex-end; } ' +
