@@ -566,12 +566,12 @@ function addCheckboxEvent(optionNode)
     });
 }
 
-function processCheckbox(event) {
-    GM_setValue(event.target.id, event.target.checked);
+async function processCheckbox(event) {
+    await GM_setValue(event.target.id, event.target.checked);
 }
 
-function processColor(event) {
-    GM_setValue(event.target.id, event.target.value);
+async function processColor(event) {
+    await GM_setValue(event.target.id, event.target.value);
 }
 
 function switchSetting() {
