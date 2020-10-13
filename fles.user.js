@@ -726,7 +726,4 @@ switch(pageLocation) {
     case (pageLocation.match(inboxRE) || {}).input:
         adjustInbox();
         break;
-    case (pageLocation.match(settingsRespRE) || {}).input:
-        adjustSettingsResp();
-        break;
 }
