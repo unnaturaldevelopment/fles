@@ -79,12 +79,10 @@ function adjustGroup() {
 function adjustSubGroup() {
     // Replace 'ago' with actual timestamp
     if( GM_getValue('timestamp_group') ) {
-        const timestampList = document.getElementsByClassName('refresh-timestamp');
+        const timestampList = document.querySelectorAll('footer span.dn.dib-ns > time');
         let listLength = timestampList.length;
         for( let i = 0; i < listLength; i++ ) {
-            if( timestampList[i].parentElement.parentElement.className !== 'sticky_line' ) {
-                timestampList[i].textContent = 'updated on ' + timestampList[i].title;
-            }
+            timestampList[i].textContent = 'updated on ' + timestampList[i].title;
         }
     }
 }
