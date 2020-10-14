@@ -109,10 +109,13 @@ function adjustGroupPost() {
 
     // Add reply to original poster in group discussion
     if( GM_getValue('reply-to-op-in-subgroup') ) {
-        const linkDiv = document.querySelector('div.pt15.f6');
-        const replyLink = '<br><a id="reply-to-op-in-subgroup" class="link gray hover-silver">Reply</a>';
-        linkDiv.insertAdjacentHTML('beforeEnd',replyLink);
-        linkDiv.querySelector('a#reply-to-op-in-subgroup').addEventListener('click', multiReplyInsert);
+        // Regex to the rescue!
+        if( document.querySelector('div.pagination').innerText.match(/\d+$/g) !== null ) {
+            const linkDiv = document.querySelector('div.pt15.f6');
+            const replyLink = '<br><a id="reply-to-op-in-subgroup" class="link gray hover-silver">Reply</a>';
+            linkDiv.insertAdjacentHTML('beforeEnd', replyLink);
+            linkDiv.querySelector('a#reply-to-op-in-subgroup').addEventListener('click', multiReplyInsert);
+        }
     }
 
     // Enable viewing of image inline
