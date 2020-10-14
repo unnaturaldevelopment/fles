@@ -89,19 +89,22 @@ function adjustSubGroup() {
 function adjustGroupPost() {
     // Enable multi-reply
     if( GM_getValue('multi-reply-in-subgroup') ) {
-        const commentList = document.querySelectorAll('div[data-target="content--comment.main"] div.lh-copy');
-        commentList.forEach(function(comment){
-            let replyLink = comment.querySelector('a[data-reply-link]')
-            let linkSpacer = comment.querySelector('div.mh1.mid-gray').cloneNode(true)
-            let multiReplyElement = replyLink.cloneNode(true);
-            multiReplyElement.innerHTML = 'Multi-Reply';
-            multiReplyElement.removeAttribute('href');
-            multiReplyElement.removeAttribute('data-action');
-            multiReplyElement.classList.add('fles-link','link','gray','hover-silver','pointer');
-            multiReplyElement.addEventListener('click', multiReplyInsert);
-            comment.insertAdjacentElement('beforeEnd',linkSpacer);
-            comment.insertAdjacentElement('beforeEnd',multiReplyElement);
-        });
+        // Regex to the rescue!
+        if( document.querySelector('div.pagination').innerText.match(/\d+$/g) !== null ) {
+            const commentList = document.querySelectorAll('div[data-target="content--comment.main"] div.lh-copy');
+            commentList.forEach(function (comment) {
+                let replyLink = comment.querySelector('a[data-reply-link]')
+                let linkSpacer = comment.querySelector('div.mh1.mid-gray').cloneNode(true)
+                let multiReplyElement = replyLink.cloneNode(true);
+                multiReplyElement.innerHTML = 'Multi-Reply';
+                multiReplyElement.removeAttribute('href');
+                multiReplyElement.removeAttribute('data-action');
+                multiReplyElement.classList.add('fles-link', 'link', 'gray', 'hover-silver', 'pointer');
+                multiReplyElement.addEventListener('click', multiReplyInsert);
+                comment.insertAdjacentElement('beforeEnd', linkSpacer);
+                comment.insertAdjacentElement('beforeEnd', multiReplyElement);
+            });
+        }
     }
 
     // Add reply to original poster in group discussion
