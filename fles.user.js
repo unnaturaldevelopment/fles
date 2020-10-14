@@ -87,10 +87,19 @@ function adjustSubGroup() {
     }
 }
 function adjustGroupPost() {
+    let isValidPage = false;
+    if( document.querySelector( 'div.pagination') != null ) {
+        if ( document.querySelector('div.pagination').innerText.match(/\d+$/g) !== null ) {
+            isValidPage = true;
+        }
+    }
+    else {
+        isValidPage = true;
+    }
+
     // Enable multi-reply
     if( GM_getValue('multi-reply-in-subgroup') ) {
-        // Regex to the rescue!
-        if( document.querySelector('div.pagination').innerText.match(/\d+$/g) !== null ) {
+        if( isValidPage ) {
             const commentList = document.querySelectorAll('div[data-target="content--comment.main"] div.lh-copy');
             commentList.forEach(function (comment) {
                 let replyLink = comment.querySelector('a[data-reply-link]')
@@ -110,7 +119,7 @@ function adjustGroupPost() {
     // Add reply to original poster in group discussion
     if( GM_getValue('reply-to-op-in-subgroup') ) {
         // Regex to the rescue!
-        if( document.querySelector('div.pagination').innerText.match(/\d+$/g) !== null ) {
+        if( isValidPage ) {
             const linkDiv = document.querySelector('div.pt15.f6');
             const replyLink = '<br><a id="reply-to-op-in-subgroup" class="link gray hover-silver">Reply</a>';
             linkDiv.insertAdjacentHTML('beforeEnd', replyLink);
