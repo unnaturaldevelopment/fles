@@ -522,13 +522,13 @@ function addFlesSettings(){
     flesContent.insertAdjacentHTML('beforeEnd','<div id="fles-body"><p>Thanks for choosing FLES!</p></div>');
 }
 
-async function openFlesSettings() {
+function openFlesSettings() {
     // Set up normalization style sheet
     const htmlHead = document.querySelector('html head');
     htmlHead.insertAdjacentHTML('beforeEnd','<style id="fles-menu-normalize">' + GM_getResourceText('normalize4ab3de5') + '</style>');
 
     // Set up FLES style sheet
-    await GM_addStyle(
+    GM_addStyle(
         'div#fles-header { display: inherit; margin: 1%; flex: 0 0 70px; } ' +
         'div#fles-content { display: inherit; flex: 0 0 230px; } ' +
         'div#fles-footer { display: inherit; flex: 0 0 50px; justify-content: flex-end; } ' +
@@ -570,12 +570,12 @@ function addCheckboxEvent(optionNode)
     });
 }
 
-async function processCheckbox(event) {
-    await GM_setValue(event.target.id, event.target.checked);
+function processCheckbox(event) {
+    GM_setValue(event.target.id, event.target.checked);
 }
 
-async function processColor(event) {
-    await GM_setValue(event.target.id, event.target.value);
+function processColor(event) {
+    GM_setValue(event.target.id, event.target.value);
 }
 
 function switchSetting() {
