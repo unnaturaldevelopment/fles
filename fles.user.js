@@ -223,7 +223,7 @@ function adjustProfile() {
             url: window.location.href + '/pictures',
             onload: function handleResponse(response) {
                 const profileGallery = new DOMParser().parseFromString(response.responseText, 'text/html');
-                const galleryImages = profileGallery.querySelector('span.f6.gray').innerText.split(/\((\d+)\)/)[1]
+                const galleryImages = profileGallery.querySelector('span.gray').innerText.split(/\((\d+)\)/)[1]
                 const galleryPages = Math.ceil( galleryImages / 30 )
                 for (let j = 1; j <= galleryPages; j++) {
                     GM_xmlhttpRequest({
