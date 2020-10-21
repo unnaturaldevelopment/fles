@@ -682,7 +682,7 @@ function switchSetting() {
     }
 }
 
-function addGlobalFeatures() {
+function enableFloatingNavBar() {
     // Enable floating navbar
     if( GM_getValue('global-float_navbar') )
     {
@@ -695,9 +695,6 @@ function addGlobalFeatures() {
 addFlesSettings();
 GM_addStyle('a.fles-link { cursor: pointer; } span.fles-kink { color: #CC0000; font-weight: 800; }');
 
-// Add Global Features
-addGlobalFeatures();
-
 // Page handling
 const groupsRE = new RegExp('^https://fetlife.com/groups$');
 const groupSubRE = new RegExp('^https://fetlife.com/groups/[0-9]*.*$');
@@ -707,6 +704,7 @@ const pictureRE = new RegExp('^https://fetlife.com/users/[0-9]*/pictures/[0-9]*$
 const postsRE = new RegExp('^https://fetlife.com/users/[0-9]*/posts$');
 const convNewRE = new RegExp('^https://fetlife.com/conversations/new.*$');
 const inboxRE = new RegExp('^https://fetlife.com/inbox.*$');
+const exploreRE = new RegExp('^https://fetlife.com/explore/#/$');
 const pageLocation = window.location.href;
 
 switch(pageLocation) {
@@ -718,17 +716,22 @@ switch(pageLocation) {
         break;
     case (pageLocation.match(groupsRE) || {}).input:
         adjustGroup();
+        enableFloatingNavBar();
         break;
     case (pageLocation.match(pictureRE) || {}).input:
         adjustPicture();
         break;
     case (pageLocation.match(profileRE) || {}).input:
         adjustProfile();
+        enableFloatingNavBar();
         break;
     case (pageLocation.match(convNewRE) || {}).input:
         adjustNewConv();
         break;
     case (pageLocation.match(inboxRE) || {}).input:
         adjustInbox();
+        break;
+    case (pageLocation.match(exploreRE) || {}).input:
+        enableFloatingNavBar();
         break;
 }
