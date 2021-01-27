@@ -216,7 +216,7 @@ function adjustPicture() {
 }
 function adjustProfile() {
     // Enable redirection of click on avatar to full image in gallery
-    if( GM_getValue('redirect_avatar_to_gallery')) {
+    if (GM_getValue('redirect_avatar_to_gallery')) {
         const imgLink = document.querySelector('img.pan').src.split(/^https:\/\/pic-\w+-\d.fetlife.com\/[0-9]+\/([0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12})\/\w+\d+.jpg/)[1];
         GM_xmlhttpRequest({
             method: 'GET',
@@ -224,7 +224,7 @@ function adjustProfile() {
             onload: function handleResponse(response) {
                 const profileGallery = new DOMParser().parseFromString(response.responseText, 'text/html');
                 const galleryImages = profileGallery.querySelector('span.gray').innerText.split(/\((\d+)\)/)[1]
-                const galleryPages = Math.ceil( galleryImages / 30 )
+                const galleryPages = Math.ceil(galleryImages / 30)
                 for (let j = 1; j <= galleryPages; j++) {
                     GM_xmlhttpRequest({
                         method: 'GET',
@@ -237,11 +237,11 @@ function adjustProfile() {
                                     document.querySelector('img.pan').parentElement.href = galleryImages[i].parentNode.parentNode.parentNode.href;
                                 }
                             }
-                        });
-                    }
+                        }
+                    });
                 }
-            });
-        }
+            }
+        })
     }
 
     // Enable links to friends/followers/following from profile page
