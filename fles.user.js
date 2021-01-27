@@ -237,29 +237,26 @@ function adjustProfile() {
                                     document.querySelector('img.pan').parentElement.href = galleryImages[i].parentNode.parentNode.parentNode.href;
                                 }
                             }
-                        }
-                    });
+                        });
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     // Enable links to friends/followers/following from profile page
-    if( GM_getValue('clickable_friend_categories')) {
+    if (GM_getValue('clickable_friend_categories')) {
         const friendCats = document.querySelectorAll('div#profile ul.friends');
-        friendCats.forEach(function(category){
+        friendCats.forEach(function (category) {
             let elementText = category.previousElementSibling.textContent;
             let newRef = window.location.href;
-            if( elementText.match('^Friends')) {
+            if (elementText.match('^Friends')) {
                 newRef = newRef + '/friends';
-            }
-            else if( elementText.match('^Followers')) {
+            } else if (elementText.match('^Followers')) {
                 newRef = newRef + '/followers';
-            }
-            else if( elementText.match('^Following')) {
+            } else if (elementText.match('^Following')) {
                 newRef = newRef + '/following';
-            }
-            else if( elementText.match('^Mutual Friends')) {
+            } else if (elementText.match('^Mutual Friends')) {
                 newRef = newRef + '/friends/mutual';
             }
             category.previousElementSibling.outerHTML = '<a href="' + newRef + '">' + category.previousElementSibling.outerHTML + '</a>';
@@ -267,12 +264,11 @@ function adjustProfile() {
     }
 
     // Identify common kinks, and highlight
-    if( GM_getValue('common_kink_highlight')) {
+    if (GM_getValue('common_kink_highlight')) {
         let myFetId = unsafeWindow.FL.user.id;
         let currentProfileId = window.location.href.split(/users\/([0-9]+)/)[1];
         let kinkList = {};
-        if( GM_getValue('common_kink_highlight-color') )
-        {
+        if (GM_getValue('common_kink_highlight-color')) {
             GM_addStyle('span.fles-kink { color:' + GM_getValue('common_kink_highlight-color') + ';}');
         }
         let DOMsection = document.querySelectorAll('div.content_container div#profile div.container div.border div h3.bottom');
@@ -282,8 +278,7 @@ function adjustProfile() {
                 while (iteratorHack) {
                     if (iteratorHack.outerHTML == '<br>') {
                         break;
-                    }
-                    else {
+                    } else {
                         let listCategoryElement = iteratorHack.querySelector('p span > em');
                         let listCategory = listCategoryElement.innerText.slice(0, -1);
                         let listItemElements = listCategoryElement.parentElement.parentElement.querySelectorAll('a');
@@ -293,8 +288,7 @@ function adjustProfile() {
                                 myKinks.push(itemElement.innerText);
                             });
                             kinkList[listCategory] = myKinks;
-                        }
-                        else {
+                        } else {
                             let myKinks = JSON.parse(GM_getValue('myKinkList'));
                             listItemElements.forEach(function (itemElement) {
                                 if (myKinks[listCategory].includes(itemElement.innerText)) {
@@ -322,7 +316,7 @@ function adjustProfile() {
     }
 
     // Mutual followers should be friends
-    if( GM_getValue('show_mutual_followers')) {
+    if (GM_getValue('show_mutual_followers')) {
         let myFetId = unsafeWindow.FL.user.id;
         let currentProfileId = window.location.href.split(/users\/([0-9]+)/)[1];
         let cacheTime = GM_getValue('mutual_follower_cache_time', false);
