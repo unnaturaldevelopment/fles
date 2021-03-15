@@ -369,7 +369,7 @@ function cacheList(response)
                     const pageDOM = new DOMParser().parseFromString(response.responseText, 'text/html');
                     let memberImages = pageDOM.querySelectorAll('main div.w-50-ns.w-100.ph1 img')
                     memberImages.forEach(function (memberImage) {
-                        let memberName = memberImage.parentElement.parentElement.parentElement.innerText.split(/\s+/)[0];
+                        let memberName = memberImage.parentElement.parentElement.parentElement.lastChild.firstChild.firstChild.innerText;
                         let imageSrc = memberImage.src;
                         list.addMember(memberName,imageSrc);
                         if( list.isComplete(totalCount) === true ){
