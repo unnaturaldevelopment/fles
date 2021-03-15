@@ -331,7 +331,7 @@ function cacheList(response)
     const baseUrl = response.finalUrl;
     const pageDOM = new DOMParser().parseFromString(response.responseText, 'text/html');
     let nextPageElement = pageDOM.querySelector('.next_page');
-    let totalCountElement = pageDOM.querySelector('header form span');
+    let totalCountElement = pageDOM.querySelector('span.dib-ns:nth-child(1)');
     let totalCount = totalCountElement.innerText.split(/(?:\d+ - \d+ of )(\d+)/)[1];
     let totalPages = 1;
     let list = {
