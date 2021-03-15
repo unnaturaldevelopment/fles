@@ -612,7 +612,6 @@ function switchSetting() {
             messageNode.insertAdjacentHTML('afterBegin','<p>The settings below are global features that effect all pages.</p>');
             messageNode.insertAdjacentHTML('beforeEnd', '<table id="fles-settings"><tbody>' +
                 '<tr id="pm_options"><th class="section_header">Global Features</th><th class="section_header">Enabled?</th></tr>' +
-                '<tr><td><label for="global-float_navbar">Enable floating navigation bar</label></td><td class="option"><input type="checkbox" id="global-float_navbar" name="global-float_navbar"/></td></tr>' +
                 '</tbody></table>');
             if( flesBody.firstElementChild ) {
                 flesBody.replaceChild(messageNode, flesBody.firstElementChild);
@@ -621,15 +620,6 @@ function switchSetting() {
             addCheckboxEvent(messageNode);
             break;
         }
-    }
-}
-
-function enableFloatingNavBar() {
-    // Enable floating navbar
-    if( GM_getValue('global-float_navbar') )
-    {
-        let navbar = document.querySelector('body > nav');
-        navbar.setAttribute('style','position:sticky;position: -webkit-sticky;top: 0;left: 0;right:0');
     }
 }
 
@@ -658,11 +648,9 @@ switch(pageLocation) {
         break;
     case (pageLocation.match(groupsRE) || {}).input:
         adjustGroup();
-        enableFloatingNavBar();
         break;
     case (pageLocation.match(profileRE) || {}).input:
         adjustProfile();
-        enableFloatingNavBar();
         break;
     case (pageLocation.match(convNewRE) || {}).input:
         adjustNewConv();
@@ -671,6 +659,5 @@ switch(pageLocation) {
         adjustInbox();
         break;
     case (pageLocation.match(exploreRE) || {}).input:
-        enableFloatingNavBar();
         break;
 }
