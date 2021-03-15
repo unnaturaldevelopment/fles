@@ -45,7 +45,7 @@ function adjustSubGroup() {
 function adjustGroupPost() {
     let isValidPage = false;
     if( document.querySelector( 'div.pagination') != null ) {
-        if ( document.querySelector('div.pagination').innerText.match(/\d+$/g) !== null ) {
+        if ( document.querySelector('div.pagination').innerText.match(/\d+/g) !== null ) {
             isValidPage = true;
         }
     }
@@ -56,9 +56,9 @@ function adjustGroupPost() {
     // Enable multi-reply
     if( GM_getValue('multi-reply-in-subgroup') ) {
         if( isValidPage ) {
-            const commentList = document.querySelectorAll('div[data-target="content--comment.main"] div.lh-copy');
+            const commentList = document.querySelectorAll('#comments > div[data-comment-deletable]');
             commentList.forEach(function (comment) {
-                let replyLink = comment.querySelector('a[data-reply-link]')
+                let replyLink = comment.querySelector('a[data-reply-name]')
                 let linkSpacer = comment.querySelector('div.mh1.mid-gray').cloneNode(true)
                 let multiReplyElement = replyLink.cloneNode(true);
                 multiReplyElement.innerHTML = 'Multi-Reply';
@@ -66,8 +66,8 @@ function adjustGroupPost() {
                 multiReplyElement.removeAttribute('data-action');
                 multiReplyElement.classList.add('fles-link', 'link', 'gray', 'hover-silver', 'pointer');
                 multiReplyElement.addEventListener('click', multiReplyInsert);
-                comment.insertAdjacentElement('beforeEnd', linkSpacer);
-                comment.insertAdjacentElement('beforeEnd', multiReplyElement);
+                replyLink.parentElement.insertAdjacentElement('beforeEnd', linkSpacer);
+                replyLink.parentElement.insertAdjacentElement('beforeEnd', multiReplyElement);
             });
         }
     }
@@ -76,8 +76,10 @@ function adjustGroupPost() {
     if( GM_getValue('reply-to-op-in-subgroup') ) {
         // Regex to the rescue!
         if( isValidPage ) {
-            const linkDiv = document.querySelector('div.pt15.f6');
-            const replyLink = '<br><a id="reply-to-op-in-subgroup" class="link gray hover-silver">Reply</a>';
+            const linkDiv = document.querySelector('div.vh-100 > div.relative.min-h-100.pb7 > div.w-100.center.ph4-l.mw1260.ph0.ph3-ns.pt4' +
+                '> div.flex.flex-column.flex-row-l > main.flex-auto.tl.w-100.pr3-l.pr15-xl > div.w-100.br1.bg-near-black > div.ph3.ph4-ns.pv4.flex.justify-center.br1-ns.relative' +
+                '> div.mw42.w-100.tl.relative > div.pt15.f6');
+            const replyLink = '<a id="reply-to-op-in-subgroup" class="link gray hover-silver">Reply</a>';
             linkDiv.insertAdjacentHTML('beforeEnd', replyLink);
             linkDiv.querySelector('a#reply-to-op-in-subgroup').addEventListener('click', multiReplyInsert);
         }
@@ -122,7 +124,7 @@ function multiReplyInsert(Event) {
         pName = Event.target.ownerDocument.querySelector('a.link.mr1.mr0-l.f4-ns.f5.secondary.underline-hover.nowrap').innerHTML;
     }
 
-    let commentBox = document.querySelector('div.input-group > textarea')
+    let commentBox = document.querySelector('textarea#markdown-editor')
     commentBox.focus();
 
     let existingComment = commentBox.value;
