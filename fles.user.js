@@ -85,8 +85,10 @@ function adjustGroupPost() {
 
     // Enable viewing of image inline
     if( GM_getValue('inline-image-in-subgroup') ) {
-        const linkDiv = document.querySelector('div.pt15.f6');
-        const toggleInlineButtonThread = '<br><a id="fles-group-enable-inline-image-thread" class="link gray hover-silver">View images in thread</a>';
+        const linkDiv = document.querySelector('div.vh-100 > div.relative.min-h-100.pb7 > div.w-100.center.ph4-l.mw1260.ph0.ph3-ns.pt4' +
+            '> div.flex.flex-column.flex-row-l > main.flex-auto.tl.w-100.pr3-l.pr15-xl > section.pt4.mt3-ns.ph0-ns.ph3' +
+            '> div.bb.b--primary');
+        const toggleInlineButtonThread = '<a id="fles-group-enable-inline-image-thread" class="link gray hover-silver">View images in thread</a>';
         linkDiv.insertAdjacentHTML('beforeEnd',toggleInlineButtonThread);
         linkDiv.querySelector('a#fles-group-enable-inline-image-thread').addEventListener('click',function(){ toggleInlineImage(); });
 
