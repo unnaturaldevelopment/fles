@@ -165,15 +165,6 @@ function toggleInlineImage() {
         }
     });
 }
-function adjustPicture() {
-    // Enable reply to image owner
-    if( GM_getValue('reply_to_image_owner') ) {
-        const leaveCommentElement = document.querySelector('main div.lh-copy div.v-cloak');
-        const replyLink = '<span class="mh1 mid-gray">·</span><a id="reply-to-op-in-subgroup" class="link gray hover-silver">Mention</a>';
-        leaveCommentElement.insertAdjacentHTML('beforeEnd',replyLink);
-        leaveCommentElement.querySelector('a#reply-to-op-in-subgroup').addEventListener('click', multiReplyInsert);
-    }
-}
 function adjustProfile() {
     // Enable redirection of click on avatar to full image in gallery
     if (GM_getValue('redirect_avatar_to_gallery')) {
@@ -574,7 +565,6 @@ function switchSetting() {
                 '<tr><td><label for="common_kink_highlight">Highlight common kinks</label></td><td class="option"><input type="checkbox" id="common_kink_highlight" name="common_kink_highlight"/></td></tr>' +
                 '<tr><td><label for="common_kink_highlight-color">Highlight color for common kinks</label></td><td class="option"><input type="color" id="common_kink_highlight-color" name="common_kink_highlight-color"/><td></tr>' +
                 '<tr><td><label for="show_mutual_followers">Show Mutual Followers</label></td><td class="option"><input type="checkbox" id="show_mutual_followers" name="show_mutual_followers"/></td></tr>' +
-                '<tr><td><label for="reply_to_image_owner">Mention image owner in comment</label></td><td class="option"><input type="checkbox" id="reply_to_image_owner" name="reply_to_image_owner"/></td></tr>' +
                 '<tr><td><label for="add_writings_link">Add writings link under avatar</label></td><td class="option"><input type="checkbox" id="add_writings_link" name="add_writings_link"/></td></tr>' +
                 '</tbody></table>');
             if( flesBody.firstElementChild ) {
