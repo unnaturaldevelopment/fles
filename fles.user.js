@@ -24,10 +24,10 @@
 function adjustGroup() {
     // Replace 'ago' with actual timestamp
     if( GM_getValue('timestamp_groups') ) {
-        const timestampList = document.getElementsByClassName('refresh-timestamp');
+        const timestampList = document.querySelectorAll('time.dn.dib-ns');
         let listLength = timestampList.length;
         for( let i = 0; i < listLength; i++ ) {
-            timestampList[i].textContent = 'on ' + timestampList[i].title;
+            timestampList[i].textContent = timestampList[i].title;
         }
     }
 
@@ -35,10 +35,10 @@ function adjustGroup() {
 function adjustSubGroup() {
     // Replace 'ago' with actual timestamp
     if( GM_getValue('timestamp_group') ) {
-        const timestampList = document.querySelectorAll('footer span.dn.dib-ns > time');
+        const timestampList = document.querySelectorAll('span.dn.di-ns.nowrap > time[data-smart-timestamp="time-ago"]');
         let listLength = timestampList.length;
         for( let i = 0; i < listLength; i++ ) {
-            timestampList[i].textContent = 'updated on ' + timestampList[i].title;
+            timestampList[i].textContent = timestampList[i].title;
         }
     }
 }
