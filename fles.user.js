@@ -660,9 +660,6 @@ switch(pageLocation) {
         adjustGroup();
         enableFloatingNavBar();
         break;
-    case (pageLocation.match(pictureRE) || {}).input:
-        adjustPicture();
-        break;
     case (pageLocation.match(profileRE) || {}).input:
         adjustProfile();
         enableFloatingNavBar();
