@@ -4,7 +4,7 @@
 // @license     GPL-3.0-or-later
 // @homepageURL https://github.com/unnaturaldevelopment/fles
 // @supportURL  https://github.com/unnaturaldevelopment/fles/issues
-// @version     1.6.4
+// @version     1.7
 // @updateURL   https://openuserjs.org/meta/unnaturaldeveloper/FetLife_Enhancement_Suite.meta.js
 // @namespace   unnaturaldevelopment
 // @match       https://fetlife.com/*
