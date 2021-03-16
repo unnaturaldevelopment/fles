@@ -326,6 +326,7 @@ function adjustProfile() {
         });
     }
 }
+
 function cacheList(response)
 {
     const baseUrl = response.finalUrl;
@@ -380,6 +381,96 @@ function cacheList(response)
             }
         });
         totalPages -= 1;
+    }
+}
+
+function cacheWritings(response) {
+    // Retrieve total count of posts and pages
+    const baseUrl = response.finalUrl;
+    const pageDOM = new DOMParser().parseFromString(response.responseText, 'text/html');
+    const postsJSON = JSON.parse(pageDOM.firstChild.innerText);
+    let totalCount = postsJSON.paging.total_entries;
+    let totalPages = postsJSON.paging.total_pages;
+
+    // Build a JSON object in FLES with all posts for user
+    // Post object will look like this
+    // let post[id] = {writing_type, time_to_read, title};
+    let list = {
+        postList: {},
+        listCount: 0,
+        addPost: function(key, value) {
+            this.postList[key] = value;
+            this.listCount += 1;
+        },
+        saveList: function(key) {
+            GM_setValue(key,JSON.stringify(this.postList));
+        },
+        isComplete: function(total) {
+            if( total == this.listCount ){
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+    }
+    let curPage = 1;
+    while( curPage <= totalPages ){
+        let loopUrl = baseUrl + '?page=' + curPage;
+        GM_xmlhttpRequest({
+            method: 'GET',
+            url: loopUrl,
+            onload: function (response) {
+                if (response.status == 200) {
+                    const pageDOM = new DOMParser().parseFromString(response.responseText, 'text/html');
+                    const postsJSON = JSON.parse(pageDOM.firstChild.innerText);
+                    for(let i = 0; i < postsJSON.entries.length; i++){
+                        let post = { "writing_type": postsJSON.entries[i].writing_type,
+                                "time_to_read": postsJSON.entries[i].time_to_read,
+                                "title": postsJSON.entries[i].title };
+                        list.addPost(postsJSON.entries[i].id,post);
+                        if( list.isComplete(totalCount) === true ){
+                            list.saveList("writings");
+                        }
+                    }
+                }
+            }
+        });
+        curPage+=1;
+    }
+}
+
+function adjustPosts() {
+    // Build writings index
+    if( GM_getValue('build_writings_index') ) {
+        GM_xmlhttpRequest({
+            method: 'GET',
+            url: window.location.href,
+            onload: function (response) {
+                cacheWritings(response);
+            }
+        });
+    }
+    if( GM_getValue('build_writings_index') && GM_getValue('writings') ) {
+        const linkNav = document.querySelector('div.truncate')
+        linkNav.insertAdjacentHTML('beforeend', '<span class="dib mh1 mid-gray">·</span>');
+        linkNav.insertAdjacentHTML('beforeend', '<a class="dib gray link hover-silver" title="Show writings index">Writings Index</a>');
+        const postsJSON = JSON.parse(GM_getValue('writings'));
+        const indexElement = document.querySelector('a[title="Show writings index"]')
+        indexElement.addEventListener('click', function () {
+            const postBody = document.querySelector('.flex-row-l > main:nth-child(1) > div:nth-child(4)')
+            const parentElement = postBody.parentElement;
+            const writingsBody = postBody.parentElement.removeChild(postBody);
+            // Build table of posts
+            parentElement.insertAdjacentHTML("afterbegin", '<div id="writings_index"></div>')
+            const indexDiv = document.querySelector('div#writings_index');
+            indexDiv.insertAdjacentHTML('afterbegin', '<table id="writings_index"></table>');
+            const indexTable = document.querySelector('table#writings_index');
+            indexTable.insertAdjacentHTML('afterbegin', '<tr><th>Title</th></td><th>Writing Type</th><th>Time to Read</th></tr>');
+            for (let post in postsJSON) {
+                indexTable.insertAdjacentHTML('beforeend', `<tr><td><a class="content-link" href=${document.URL}/${post}>${postsJSON[post].title}</a></td><td>${postsJSON[post].writing_type}</td><td>${postsJSON[post].time_to_read}</td></tr>`);
+            }
+        })
     }
 }
 function adjustNewConv() {
@@ -566,6 +657,7 @@ function switchSetting() {
                 '<tr><td><label for="common_kink_highlight-color">Highlight color for common kinks</label></td><td class="option"><input type="color" id="common_kink_highlight-color" name="common_kink_highlight-color"/><td></tr>' +
                 '<tr><td><label for="show_mutual_followers">Show Mutual Followers</label></td><td class="option"><input type="checkbox" id="show_mutual_followers" name="show_mutual_followers"/></td></tr>' +
                 '<tr><td><label for="add_writings_link">Add writings link under avatar</label></td><td class="option"><input type="checkbox" id="add_writings_link" name="add_writings_link"/></td></tr>' +
+                '<tr><td><label for="build_writings_index">Generate index of writings</label></td><td class="option"><input type="checkbox" id="build_writings_index" name="build_writings_index"</td></tr>' +
                 '</tbody></table>');
             if( flesBody.firstElementChild ) {
                 flesBody.replaceChild(profileNode, flesBody.firstElementChild);
@@ -651,6 +743,9 @@ switch(pageLocation) {
         break;
     case (pageLocation.match(profileRE) || {}).input:
         adjustProfile();
+        break;
+    case (pageLocation.match(postsRE) || {}).input:
+        adjustPosts();
         break;
     case (pageLocation.match(convNewRE) || {}).input:
         adjustNewConv();
