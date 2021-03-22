@@ -1,8 +1,11 @@
 # FetLife Enhancement Suite
 
 The FetLife Enhancement Suite (FLES) is a UserScript that can be added to the Tampermonkey (or like) browser extension. The purpose of the script is to provide customization of the user interface built by the FetLife team.
-
 **The script will not add functionality that is included when a user supports FetLife.**
+
+## Features List
+The current features provided by FLES are listed in the
+[wiki](https://github.com/unnaturaldevelopment/fles/wiki).
 
 ## Getting Started
 
