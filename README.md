@@ -3,6 +3,17 @@
 The FetLife Enhancement Suite (FLES) is a UserScript that can be added to the Tampermonkey (or like) browser extension. The purpose of the script is to provide customization of the user interface built by the FetLife team.
 **The script will not add functionality that is included when a user supports FetLife.**
 
+## Project Closed
+Due to an overwhelming number of priorities, I decided to close this project. 
+
+I appreciate the support and the number of users that enjoyed the features that FLES provided during its time. If you're interested in using an alternative, take a look at [FetLife Enhancer](https://openuserjs.org/scripts/PrincessBabyTay/FetLife_Enhancer).
+
+In the future, I expect to contribute to their project.
+
+Regards,
+
+-- mosen
+
 ## Features List
 The current features provided by FLES are listed in the
 [wiki](https://github.com/unnaturaldevelopment/fles/wiki).
@@ -13,7 +24,7 @@ The following instructions will help you set up FLES in your browser.
 
 ### Prerequisites
 
-Currently, FLES is built dependent on a UserScript manager browser extension, such as [Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=en) for Chrome, and [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey).
+FLES is built dependent on a UserScript manager browser extension, such as [Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?hl=en) for Chrome, and [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey).
 
 Both extensions are available through the official browser extension stores (links for each are included above). Depending on which browser you use, having an extension of this type is the only requirement to use FLES.
 
